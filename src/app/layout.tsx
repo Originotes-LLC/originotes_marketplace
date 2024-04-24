@@ -1,10 +1,8 @@
 import "./globals.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
-import Footer from "./_components/footer";
 import { Inter } from "next/font/google";
 import type { Metadata } from "next";
-import Navbar from "./_components/navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,11 +19,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html className="h-full" lang="en">
-        <body className={`h-full ${inter.className}`}>
-          <Navbar />
-          {children}
-          <Footer />
-        </body>
+        <body className={`h-full ${inter.className}`}>{children}</body>
       </html>
     </ClerkProvider>
   );

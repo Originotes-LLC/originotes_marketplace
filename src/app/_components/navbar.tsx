@@ -1,16 +1,11 @@
 "use client";
 
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { Disclosure, Menu } from "@headlessui/react";
+import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-import { Fragment } from "react";
-import Image from "next/image";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
+import Image from "next/image";
 
 export default function Navbar() {
   return (
