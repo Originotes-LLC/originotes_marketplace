@@ -1,37 +1,38 @@
-'use client'
+"use client";
 const favorites = [
   {
     id: 1,
-    name: 'Black Basic Tee',
-    price: '$32',
-    href: '#',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-01.jpg',
+    name: "Black Basic Tee",
+    price: "$32",
+    href: "#",
+    imageSrc:
+      "https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-01.jpg",
     imageAlt: "Model wearing women's black cotton crewneck tee.",
   },
   {
     id: 2,
-    name: 'Off-White Basic Tee',
-    price: '$32',
-    href: '#',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-02.jpg',
+    name: "Off-White Basic Tee",
+    price: "$32",
+    href: "#",
+    imageSrc:
+      "https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-02.jpg",
     imageAlt: "Model wearing women's off-white cotton crewneck tee.",
   },
   {
     id: 3,
-    name: 'Mountains Artwork Tee',
-    price: '$36',
-    href: '#',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-03.jpg',
+    name: "Mountains Artwork Tee",
+    price: "$36",
+    href: "#",
+    imageSrc:
+      "https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-03.jpg",
     imageAlt:
       "Model wearing women's burgundy red crewneck artwork tee with small white triangle overlapping larger black triangle.",
   },
-]
+];
 
 export default function FrontPage() {
   return (
-    <div className="bg-white">
-
-
+    <div>
       <header className="relative overflow-hidden">
         {/* Hero section */}
         <div className="pb-80 pt-16 sm:pb-40 sm:pt-24 lg:pb-48 lg:pt-40">
@@ -41,8 +42,8 @@ export default function FrontPage() {
                 Summer styles are finally here
               </h1>
               <p className="mt-4 text-xl text-gray-500">
-                This year, our new summer collection will shelter you from the harsh elements of a world that doesn't
-                care if you live or die.
+                This year, our new summer collection will shelter you from the
+                harsh elements of a world that doesn't care if you live or die.
               </p>
             </div>
             <div>
@@ -115,7 +116,7 @@ export default function FrontPage() {
 
                 <a
                   href="#"
-                  className="inline-block rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-center font-medium text-white hover:bg-indigo-700"
+                  className="inline-block rounded-md border border-transparent bg-fuchsia-600 px-8 py-3 text-center font-medium text-white hover:bg-fuchsia-700"
                 >
                   Shop Collection
                 </a>
@@ -130,10 +131,16 @@ export default function FrontPage() {
         <section aria-labelledby="category-heading" className="bg-gray-50">
           <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
             <div className="sm:flex sm:items-baseline sm:justify-between">
-              <h2 id="category-heading" className="text-2xl font-bold tracking-tight text-gray-900">
+              <h2
+                id="category-heading"
+                className="text-2xl font-bold tracking-tight text-gray-900"
+              >
                 Shop by Category
               </h2>
-              <a href="#" className="hidden text-sm font-semibold text-indigo-600 hover:text-indigo-500 sm:block">
+              <a
+                href="#"
+                className="hidden text-sm font-semibold text-fuchsia-600 hover:text-fuchsia-500 sm:block"
+              >
                 Browse all categories
                 <span aria-hidden="true"> &rarr;</span>
               </a>
@@ -146,7 +153,10 @@ export default function FrontPage() {
                   alt="Two models wearing women's black cotton crewneck tee and off-white cotton crewneck tee."
                   className="object-cover object-center group-hover:opacity-75"
                 />
-                <div aria-hidden="true" className="bg-gradient-to-b from-transparent to-black opacity-50" />
+                <div
+                  aria-hidden="true"
+                  className="bg-gradient-to-b from-transparent to-black opacity-50"
+                />
                 <div className="flex items-end p-6">
                   <div>
                     <h3 className="font-semibold text-white">
@@ -212,7 +222,10 @@ export default function FrontPage() {
             </div>
 
             <div className="mt-6 sm:hidden">
-              <a href="#" className="block text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+              <a
+                href="#"
+                className="block text-sm font-semibold text-fuchsia-600 hover:text-fuchsia-500"
+              >
                 Browse all categories
                 <span aria-hidden="true"> &rarr;</span>
               </a>
@@ -230,15 +243,22 @@ export default function FrontPage() {
                 className="h-full w-full object-cover object-center"
               />
             </div>
-            <div aria-hidden="true" className="absolute inset-0 bg-gray-900 bg-opacity-50" />
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-gray-900 bg-opacity-50"
+            />
             <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
-              <h2 id="cause-heading" className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              <h2
+                id="cause-heading"
+                className="text-3xl font-bold tracking-tight text-white sm:text-4xl"
+              >
                 Long-term thinking
               </h2>
               <p className="mt-3 text-xl text-white">
-                We're committed to responsible, sustainable, and ethical manufacturing. Our small-scale approach allows
-                us to focus on quality and reduce our impact. We're doing our best to delay the inevitable heat-death of
-                the universe.
+                We're committed to responsible, sustainable, and ethical
+                manufacturing. Our small-scale approach allows us to focus on
+                quality and reduce our impact. We're doing our best to delay the
+                inevitable heat-death of the universe.
               </p>
               <a
                 href="#"
@@ -254,10 +274,16 @@ export default function FrontPage() {
         <section aria-labelledby="favorites-heading">
           <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
             <div className="sm:flex sm:items-baseline sm:justify-between">
-              <h2 id="favorites-heading" className="text-2xl font-bold tracking-tight text-gray-900">
+              <h2
+                id="favorites-heading"
+                className="text-2xl font-bold tracking-tight text-gray-900"
+              >
                 Our Favorites
               </h2>
-              <a href="#" className="hidden text-sm font-semibold text-indigo-600 hover:text-indigo-500 sm:block">
+              <a
+                href="#"
+                className="hidden text-sm font-semibold text-fuchsia-600 hover:text-fuchsia-500 sm:block"
+              >
                 Browse all favorites
                 <span aria-hidden="true"> &rarr;</span>
               </a>
@@ -285,7 +311,10 @@ export default function FrontPage() {
             </div>
 
             <div className="mt-6 sm:hidden">
-              <a href="#" className="block text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+              <a
+                href="#"
+                className="block text-sm font-semibold text-fuchsia-600 hover:text-fuchsia-500"
+              >
                 Browse all favorites
                 <span aria-hidden="true"> &rarr;</span>
               </a>
@@ -300,7 +329,10 @@ export default function FrontPage() {
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="relative pb-16 pt-48 sm:pb-24">
                   <div>
-                    <h2 id="sale-heading" className="text-4xl font-bold tracking-tight text-white md:text-5xl">
+                    <h2
+                      id="sale-heading"
+                      className="text-4xl font-bold tracking-tight text-white md:text-5xl"
+                    >
                       Final Stock.
                       <br />
                       Up to 50% off.
@@ -375,5 +407,5 @@ export default function FrontPage() {
         </section>
       </main>
     </div>
-  )
+  );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { Dialog, Transition } from "@headlessui/react";
 import {
   BanknotesIcon,
   Bars3Icon,
@@ -10,48 +9,51 @@ import {
   RectangleGroupIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import UserProfile from "./user_profile";
-
-const navigation = [
-  {
-    name: "Dashboard",
-    href: "/vendor/dashboard",
-    icon: HomeIcon,
-  },
-  {
-    name: "Product Listings",
-    href: "/vendor/listings",
-    icon: RectangleGroupIcon,
-  },
-  {
-    name: "Messages",
-    href: "/vendor/messages",
-    icon: ChatBubbleLeftIcon,
-  },
-  {
-    name: "Orders",
-    href: "/vendor/orders",
-    icon: ClipboardDocumentIcon,
-  },
-  {
-    name: "Finances",
-    href: "/vendor/finances",
-    icon: BanknotesIcon,
-  },
-];
+import UserProfile from "@/components/user_profile";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function VendorSidebar() {
+  const searchParams = useSearchParams()
+  const currentPage = searchParams.get('page')
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigation = [
+    {
+      name: "Dashboard",
+      href: "/vendor/dashboard",
+      icon: HomeIcon,
+    },
+    {
+      name: "Service Listings",
+      href: currentPage ? `/vendor/listings?page=${currentPage}` : "/vendor/listings?page=1",
+      icon: RectangleGroupIcon,
+    },
+    {
+      name: "Messages",
+      href: "/vendor/messages",
+      icon: ChatBubbleLeftIcon,
+    },
+    {
+      name: "Orders",
+      href: "/vendor/orders",
+      icon: ClipboardDocumentIcon,
+    },
+    {
+      name: "Finances",
+      href: "/vendor/finances",
+      icon: BanknotesIcon,
+    },
+  ];
+
   return (
     <>
       <Transition.Root show={sidebarOpen} as={Fragment}>
@@ -100,19 +102,19 @@ export default function VendorSidebar() {
                     >
                       <span className="sr-only">Close sidebar</span>
                       <XMarkIcon
-                        className="h-6 w-6 text-white"
+                        className="size-6 text-white"
                         aria-hidden="true"
                       />
                     </button>
                   </div>
                 </Transition.Child>
                 {/* Sidebar component, swap this element with another sidebar if you like */}
-                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
+                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-50 px-6 pb-2 ring-1 ring-white/10">
                   <div className="flex h-16 shrink-0 items-center">
                     <Image
-                      className="h-8 w-auto"
-                      height={32}
-                      width={32}
+                      className="h-12 w-auto rounded-full"
+                      height={48}
+                      width={48}
                       src="/originotes_logo.png"
                       alt="Originotes"
                     />
@@ -126,14 +128,14 @@ export default function VendorSidebar() {
                               <Link
                                 href={item.href}
                                 className={classNames(
-                                  item.href === pathname
-                                    ? "bg-gray-800 text-white"
-                                    : "text-gray-400 hover:text-white hover:bg-gray-800",
+                                  item.href.includes(pathname)
+                                    ? "bg-gray-200 text-black"
+                                    : "text-gray-400 hover:text-gray-900 hover:bg-gray-100",
                                   "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                 )}
                               >
                                 <item.icon
-                                  className="h-6 w-6 shrink-0"
+                                  className="size-6 shrink-0"
                                   aria-hidden="true"
                                 />
                                 {item.name}
@@ -154,12 +156,12 @@ export default function VendorSidebar() {
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
         {/* Sidebar component, swap this element with another sidebar if you like */}
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6">
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-50 px-6">
           <div className="flex h-16 shrink-0 items-center">
             <Image
-              className="h-8 w-auto"
-              height={32}
-              width={32}
+              className="h-12 w-auto rounded-full"
+              height={48}
+              width={48}
               src="/originotes_logo.png"
               alt="Your Company"
             />
@@ -173,14 +175,14 @@ export default function VendorSidebar() {
                       <Link
                         href={item.href}
                         className={classNames(
-                          item.href === pathname
-                            ? "bg-gray-800 text-white"
-                            : "text-gray-400 hover:text-white hover:bg-gray-800",
+                          item.href.includes(pathname)
+                            ? "bg-gray-200 text-black"
+                            : "text-gray-400 hover:text-gray-900 hover:bg-gray-100",
                           "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                         )}
                       >
                         <item.icon
-                          className="h-6 w-6 shrink-0"
+                          className="size-6 shrink-0"
                           aria-hidden="true"
                         />
                         {item.name}
@@ -199,19 +201,18 @@ export default function VendorSidebar() {
           </nav>
         </div>
       </div>
-      <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+      <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 p-4 shadow-sm sm:px-6 lg:hidden">
         <button
           type="button"
           className="-m-2.5 p-2.5 text-gray-400 lg:hidden"
           onClick={() => setSidebarOpen(true)}
         >
           <span className="sr-only">Open sidebar</span>
-          <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+          <Bars3Icon className="size-6" aria-hidden="true" />
         </button>
         <div className="flex-1 text-sm font-semibold leading-6 text-white">
           Dashboard
         </div>
-
         <UserProfile />
       </div>
     </>

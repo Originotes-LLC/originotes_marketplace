@@ -1,5 +1,13 @@
 {
   "compilerOptions": {
+    "baseUrl": "src/app",
+    "paths": {
+      "@/components/*": ["_components/*"],
+      "@/utils/*": ["_utils/*"],
+      "@/routes/*": ["(routes)/*"],
+      "@/lib/*": ["_lib/*"],
+      "@/listings/*": ["(routes)/vendor/listings/*"]
+    },
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -16,10 +24,7 @@
       {
         "name": "next"
       }
-    ],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    ]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
