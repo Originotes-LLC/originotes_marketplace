@@ -1,4 +1,3 @@
-import { EmptyListings } from "@/listings/empty_listings";
 import Image from "next/image";
 import { formattedDate } from "@/utils/date_formats";
 
@@ -85,13 +84,7 @@ interface Service {
 
 export const ListingsGrid = ({ services }: { services: Service[] }) => {
 
-  if (!services.length) return (
-    <div className="h-full py-12">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <EmptyListings />
-      </div>
-    </div>
-  );
+
   return (
     <div className="py-12">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">

@@ -20,6 +20,7 @@ export const ListingPagination = ({
   pages,
   pageCount,
 }: ListingPaginationProps) => {
+
   return (
     <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
       {pages && (
@@ -53,8 +54,8 @@ export const ListingPagination = ({
           {pages ? (
             <p className="text-sm text-gray-700">
               Showing{" "}
-              <span className="font-medium">{pages && pages[page].start}</span>{" "}
-              to <span className="font-medium">{pages && pages[page].end}</span>{" "}
+              <span className="font-medium">{pages && pages[page] && pages[page].start}</span>{" "}
+              to <span className="font-medium">{pages && pages[page] && pages[page].end}</span>{" "}
               of <span className="font-medium">{count}</span> results
             </p>
           ) : (
