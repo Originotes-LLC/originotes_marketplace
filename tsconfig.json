@@ -1,17 +1,23 @@
 {
   "compilerOptions": {
+    "target": "es2022",
+    "moduleDetection": "force",
+    "verbatimModuleSyntax": true,
     "baseUrl": "src/app",
     "paths": {
       "@/components/*": ["_components/*"],
       "@/utils/*": ["_utils/*"],
       "@/routes/*": ["(routes)/*"],
       "@/lib/*": ["_lib/*"],
-      "@/listings/*": ["(routes)/vendor/listings/*"]
+      "@/listings/*": ["(routes)/vendor/listings/*"],
+      "@/vendor/*": ["(routes)/vendor/*"]
     },
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",

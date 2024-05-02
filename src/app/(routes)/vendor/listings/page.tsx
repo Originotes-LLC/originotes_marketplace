@@ -28,7 +28,7 @@ export default async function VendorListings({
   const page = searchParams.page ? parseInt(searchParams.page as string) : 1;
   const user = await currentUser();
   const services: Service = await getServicesByVendorId(user?.id, page);
-  console.log("services: ", services);
+  // console.log("services: ", services);
 
   if (!services || services?.error) {
     throw new Error(
