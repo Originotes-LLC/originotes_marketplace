@@ -22,8 +22,8 @@ function classNames(...classes: string[]) {
 }
 
 export default function VendorSidebar() {
-  const searchParams = useSearchParams()
-  const currentPage = searchParams.get('page')
+  const searchParams = useSearchParams();
+  const currentPage = searchParams.get("page");
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigation = [
@@ -34,7 +34,9 @@ export default function VendorSidebar() {
     },
     {
       name: "Service Listings",
-      href: currentPage ? `/vendor/listings?page=${currentPage}` : "/vendor/listings?page=1",
+      href: currentPage
+        ? `/vendor/listings?page=${currentPage}`
+        : "/vendor/listings?page=1",
       icon: RectangleGroupIcon,
     },
     {
@@ -108,7 +110,7 @@ export default function VendorSidebar() {
                     </button>
                   </div>
                 </Transition.Child>
-                {/* Sidebar component, swap this element with another sidebar if you like */}
+                {/* Sidebar component for smaller screens, swap this element with another sidebar if you like */}
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-50 px-6 pb-2 ring-1 ring-white/10">
                   <div className="flex h-16 shrink-0 items-center">
                     <Image
@@ -128,7 +130,7 @@ export default function VendorSidebar() {
                               <Link
                                 href={item.href}
                                 className={classNames(
-                                  item.href.includes(pathname)
+                                  pathname.startsWith(Array.isArray(item.href.split("?")) ? item.href.split("?")[0] : item.href)
                                     ? "bg-gray-200 text-black"
                                     : "text-gray-400 hover:text-gray-900 hover:bg-gray-100",
                                   "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
@@ -175,7 +177,7 @@ export default function VendorSidebar() {
                       <Link
                         href={item.href}
                         className={classNames(
-                          item.href.includes(pathname)
+                          pathname.startsWith(item.href.split("?")[0])
                             ? "bg-gray-200 text-black"
                             : "text-gray-400 hover:text-gray-900 hover:bg-gray-100",
                           "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
