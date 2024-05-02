@@ -111,7 +111,7 @@ export default function VendorSidebar() {
                   </div>
                 </Transition.Child>
                 {/* Sidebar component for smaller screens, swap this element with another sidebar if you like */}
-                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-50 px-6 pb-2 ring-1 ring-white/10">
+                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-50 px-6 pb-2 ring-1 ring-white/10 dark:bg-gray-700">
                   <div className="flex h-16 shrink-0 items-center">
                     <Image
                       className="h-12 w-auto rounded-full"
@@ -158,7 +158,7 @@ export default function VendorSidebar() {
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
         {/* Sidebar component, swap this element with another sidebar if you like */}
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-50 px-6">
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-50 px-6 dark:bg-gray-700">
           <div className="flex h-16 shrink-0 items-center">
             <Image
               className="h-12 w-auto rounded-full"
