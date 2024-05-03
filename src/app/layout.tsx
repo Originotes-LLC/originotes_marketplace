@@ -3,7 +3,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import type { Metadata } from "next";
-import React from 'react';
+import React from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,11 +21,15 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html suppressHydrationWarning className="h-full" lang="en">
-        <body className={`h-full ${inter.className}`}>
-          <ThemeProvider attribute="class"
+        <body className={`h-full ${inter.className} antialiased`}>
+          <ThemeProvider
+            attribute="class"
             defaultTheme="system"
             enableSystem
-            disableTransitionOnChange>{children}</ThemeProvider>
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

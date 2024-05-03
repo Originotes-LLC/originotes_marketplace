@@ -1,7 +1,53 @@
+"use client";
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { type SubmitHandler, useForm } from "react-hook-form";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { ServiceListingSchema } from "@/lib/schema";
 import { ListingFormFooter } from "@/listings/service-editor/listing_form_footer";
-import { PhotoIcon } from "@heroicons/react/24/solid";
-import { ServiceCategories } from "@/components/select_menu";
-import { submitNewService } from "@/vendor/actions";
+import { cn } from "@/utils/shadcdn_utils";
+import { z } from "zod";
+// import { submitNewService } from "@/vendor/actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const languages = [
+  { label: "English", value: "en" },
+  { label: "French", value: "fr" },
+  { label: "German", value: "de" },
+  { label: "Spanish", value: "es" },
+  { label: "Portuguese", value: "pt" },
+  { label: "Russian", value: "ru" },
+  { label: "Japanese", value: "ja" },
+  { label: "Korean", value: "ko" },
+  { label: "Chinese", value: "zh" },
+] as const;
+
 /*
 
 Fields needed to create a service
@@ -15,240 +61,232 @@ Fields needed to create a service
 - Options (list of options like add-ons of type toggle )
 - Service Description (content)
 */
+
+interface IFormInputs {
+  service_name: string;
+  service_description: string;
+  service_price: string;
+  service_category: string;
+}
+
 export const CreateListingForm = () => {
+  const form = useForm<z.infer<typeof ServiceListingSchema>>({
+    resolver: zodResolver(ServiceListingSchema),
+    defaultValues: {
+      service_name: "",
+      service_description: "",
+      service_category: "",
+      service_price: "",
+    },
+  });
+
+  const onSubmit: SubmitHandler<IFormInputs> = (data) => {
+    console.log(`The form has no errors client side`, data);
+  };
+
+  console.log("form errors: ", form.formState.errors);
+
   return (
-    <form action={submitNewService} className="relative space-y-10 divide-y divide-gray-900/10">
-      <div className="grid grid-cols-1 gap-8 pt-10 md:grid-cols-3">
-        <div className="px-4 sm:px-0">
-          <h2 className="text-base font-semibold leading-7 text-gray-900">
-            Service Details
-          </h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">
-            Tell your customers about your service details. Be as creative as
-            you want with the name and description.
-          </p>
-        </div>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="relative space-y-10 divide-y divide-neutral-900/10"
+      >
+        <div className="grid grid-cols-1 gap-8 pt-10 md:grid-cols-3">
+          <div className="px-4 sm:px-0">
+            <h2 className="text-base font-semibold leading-7 text-neutral-900 dark:text-background">
+              Service Details
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-neutral-600 dark:text-neutral-200">
+              Tell your customers about your service details. Be as creative as
+              you want with the name and description.
+            </p>
+          </div>
 
-        <div className="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
-          <div className="px-4 py-6 sm:p-8">
-            <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div className="sm:col-span-4">
-                <label
-                  htmlFor="service_name"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Name
-                </label>
-                <div className="mt-2">
-                  <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-fuchsia-600 sm:max-w-md">
-                    {/* <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm">http://</span> */}
-                    <input
-                      type="text"
-                      name="service_name"
-                      id="service_name"
-                      className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                      placeholder="e.g. proposal, magic elopement, date-night-in-i-box"
-                    />
-                  </div>
+          <div className="shadow-sm ring-1 ring-neutral-900/5 dark:bg-foreground sm:rounded-xl md:col-span-2">
+            <div className="px-4 py-6 sm:p-8">
+              <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                <div className="sm:col-span-4">
+                  <FormField
+                    name="service_name"
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Label className="dark:text-background" htmlFor="service_name">Name</Label>
+                        <FormControl>
+                          <Input
+                            className="dark:text-background"
+                            type="text"
+                            id="service_name"
+                            placeholder="e.g. proposal, magic elopement, date-night-in-i-box"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription className="dark:text-neutral-200">
+                          This is the name of your service. Make it catchy and
+                          descriptive.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  ></FormField>
                 </div>
-              </div>
 
-              <div className="col-span-full">
-                <label
-                  htmlFor="service_description"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Description
-                </label>
-                <div className="mt-2">
-                  <textarea
-                    id="service_description"
+                <div className="col-span-full">
+                  <FormField
+                    control={form.control}
                     name="service_description"
-                    rows={3}
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-fuchsia-600 sm:text-sm sm:leading-6"
-                    defaultValue={""}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Label className="dark:text-background" htmlFor="service_description">Description</Label>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Describe your service in detail."
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription className="dark:text-neutral-200">
+                          Elaborate what your service will provide if users were
+                          to purchase it. Buyers will only see the first few
+                          lines unless they expand the description.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-                <p className="mt-3 text-sm leading-6 text-gray-600">
-                  Elaborate what your service will provide if users were to
-                  purchase it. Buyers will only see the first few lines unless
-                  they expand the description.
-                </p>
-              </div>
 
-              {/* CATEGORIES */}
-              <div className="mt-6 sm:col-span-full">
-                <ServiceCategories />
-              </div>
+                {/* CATEGORIES */}
+                <FormField
+                  control={form.control}
+                  name="service_category"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel className="dark:text-background">Category</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className={cn(
+                                "w-[200px] justify-between",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value
+                                ? languages.find(
+                                  (language) => language.value === field.value
+                                )?.label
+                                : "Select language"}
+                              <CaretSortIcon className="ml-2 size-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[200px] p-0">
+                          <Command>
+                            <CommandInput
+                              placeholder="Search framework..."
+                              className="h-9"
+                            />
+                            <CommandEmpty>No framework found.</CommandEmpty>
+                            <CommandGroup>
+                              <CommandList>
+                                {languages.map((language) => (
+                                  <CommandItem
+                                    key={language.value}
+                                    value={language.label}
+                                    onSelect={() => {
+                                      form.setValue(
+                                        "service_category",
+                                        language.value
+                                      );
+                                    }}
+                                  >
+                                    {language.label}
+                                    <CheckIcon
+                                      className={cn(
+                                        "ml-auto h-4 w-4",
+                                        language.value === field.value
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                              </CommandList>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <FormDescription className="dark:text-neutral-200">
+                        This is the language that will be used in the dashboard.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <div className="col-span-full">
-                <label
-                  htmlFor="cover-photo"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Photos
-                </label>
-                <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                  <div className="text-center">
-                    <PhotoIcon
-                      className="mx-auto size-12 text-gray-300"
-                      aria-hidden="true"
-                    />
-                    <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                      <label
-                        htmlFor="service_file_upload"
-                        className="relative cursor-pointer rounded-md bg-white font-semibold text-fuchsia-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-fuchsia-600 focus-within:ring-offset-2 hover:text-fuchsia-500"
-                      >
-                        <span>Upload a file</span>
-                        <input
-                          id="service_file_upload"
-                          name="service_file_upload"
-                          type="file"
-                          className="sr-only"
+                {/* Photos uploader will go here below */}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* PRICING SECTION */}
+        <div className="grid grid-cols-1 gap-8 pb-32 pt-10 md:grid-cols-3">
+          <div className="px-4 sm:px-0">
+            <h2 className="text-base font-semibold leading-7 text-neutral-900 dark:text-background">
+              Pricing & Inventory
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-neutral-600 dark:text-background">
+              Set the price and availability of your service.
+            </p>
+          </div>
+
+          <div className="bg-white shadow-sm ring-1 ring-neutral-900/5 dark:bg-foreground sm:rounded-xl md:col-span-2">
+            <div className="px-4 py-6 sm:p-8">
+              <div className="max-w-2xl space-y-10">
+                <FormField
+                  control={form.control}
+                  name="service_price"
+                  render={({ field }) => (
+                    <FormItem className="relative">
+                      <FormLabel className="dark:text-background">Price</FormLabel>
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span className="text-neutral-500 sm:text-sm">$</span>
+                      </div>
+                      <FormControl>
+                        <Input
+                          className="pl-7 pr-12 dark:text-background"
+                          placeholder="15023"
+                          {...field}
                         />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
-                    </div>
-                    <p className="text-xs leading-5 text-gray-600">
-                      PNG, JPG, GIF up to 10MB
-                    </p>
-                  </div>
-                </div>
-                <p className="mt-3 text-sm leading-6 text-gray-600">
-                  Showcase your service with a cover photo. PNG, JPG, GIF up to
-                  10MB.
-                </p>
+                      </FormControl>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <span
+                          className="text-neutral-500 dark:text-background sm:text-sm"
+                          id="price-currency"
+                        >
+                          USD
+                        </span>
+                      </div>
+                      <FormDescription className="dark:text-background">
+                        Set the price for your service. This will be the
+                        standard price that buyers will see.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* PRICING SECTION */}
-      <div className="grid grid-cols-1 gap-8 pt-10 md:grid-cols-3">
-        <div className="px-4 sm:px-0">
-          <h2 className="text-base font-semibold leading-7 text-gray-900">
-            Pricing & Inventory
-          </h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">
-            Set the price and availability of your service.
-          </p>
+        <div className="fixed inset-x-0 bottom-0">
+          <ListingFormFooter />
         </div>
-
-        <div className="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
-          <div className="px-4 py-6 sm:p-8">
-            <div className="max-w-2xl space-y-10">
-              <div>
-                <label
-                  htmlFor="service_price"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Price
-                </label>
-                <div className="relative mt-2 rounded-md shadow-sm">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <span className="text-gray-500 sm:text-sm">$</span>
-                  </div>
-                  <input
-                    type="text"
-                    name="service_price"
-                    id="service_price"
-                    className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-fuchsia-600 sm:text-sm sm:leading-6"
-                    placeholder="0.00"
-                    aria-describedby="price-currency"
-                  />
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                    <span
-                      className="text-gray-500 sm:text-sm"
-                      id="price-currency"
-                    >
-                      USD
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 gap-8 pb-32 pt-10 md:grid-cols-3">
-        <div className="px-4 sm:px-0">
-          <h2 className="text-base font-semibold leading-7 text-gray-900">
-            Add-Ons
-          </h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">
-            Add optional items to your service to increase its value. For example, musician, champagne, or a photographer.
-          </p>
-        </div>
-
-        {/* VARIATIONS AKA ADD-ONS SECTION */}
-        <div className="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
-          <div className="px-4 py-6 sm:p-8">
-            <div className="flex items-center justify-between">
-              <div className="w-full pr-2">
-                <label
-                  htmlFor="add-on-name"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Add-on Name
-                </label>
-                <div className="mt-2">
-                  <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-fuchsia-600 sm:max-w-md">
-                    {/* <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm">http://</span> */}
-                    <input
-                      type="text"
-                      name="add-on-name"
-                      id="add-on-name"
-                      className="block flex-1 border-0 bg-transparent py-1.5 pl-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                      placeholder="e.g. musician, champagne, photographer"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="w-full pl-2">
-                <label
-                  htmlFor="price"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Price
-                </label>
-                <div className="relative mt-2 rounded-md shadow-sm">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <span className="text-gray-500 sm:text-sm">$</span>
-                  </div>
-                  <input
-                    type="text"
-                    name="price"
-                    id="price"
-                    className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-fuchsia-600 sm:text-sm sm:leading-6"
-                    placeholder="0.00"
-                    aria-describedby="price-currency"
-                  />
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                    <span
-                      className="text-gray-500 sm:text-sm"
-                      id="price-currency"
-                    >
-                      USD
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-6">
-              <button
-                type="button"
-                className="rounded-md bg-white px-3 py-2 text-sm font-normal text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-              >
-                Add Add-On
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="fixed inset-x-0 bottom-0">
-        <ListingFormFooter />
-      </div>
-    </form>
+      </form>
+    </Form>
   );
 };

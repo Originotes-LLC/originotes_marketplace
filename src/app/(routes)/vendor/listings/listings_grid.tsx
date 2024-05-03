@@ -100,15 +100,15 @@ export const ListingsGrid = ({ services }: { services: Service[] }) => {
                   height={service.images[0].file.height}
                   src={service.images[0].file.url}
                   alt=""
-                  className="aspect-[16/9] w-full rounded-2xl bg-gray-100 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
+                  className="aspect-[16/9] w-full rounded-2xl bg-neutral-100 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
                 />
-                <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gray-900/10" />
+                <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-neutral-900/10" />
               </div>
               <div className="max-w-xl">
                 <div className="mt-8 flex items-center gap-x-4 text-xs">
                   <time
                     dateTime={service.date_updated}
-                    className="text-gray-500"
+                    className="text-neutral-500"
                   >
                     Updated on {formattedDate(service.date_updated)}
                   </time>
@@ -118,11 +118,11 @@ export const ListingsGrid = ({ services }: { services: Service[] }) => {
                   </div>
                 </div>
                 <div className="group relative">
-                  <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 group-hover:text-gray-600">
+                  <h3 className="mt-3 text-lg font-semibold leading-6 text-neutral-900 group-hover:text-neutral-600">
                     <span className="absolute inset-0" />
                     {service.name}
                   </h3>
-                  <p className="mt-5 line-clamp-3 text-sm leading-6 text-gray-600">
+                  <p className="mt-5 line-clamp-3 text-sm leading-6 text-neutral-600">
                     {service.description}
                   </p>
                 </div>
