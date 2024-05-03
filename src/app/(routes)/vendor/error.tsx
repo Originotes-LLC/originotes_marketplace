@@ -21,7 +21,7 @@ export default function Error({
       <div className="mx-auto max-w-2xl text-center">
         <ExclamationTriangleIcon className="h-16 w-full text-red-500" />
         <h2 className="mt-2 text-4xl font-bold tracking-tight text-red-500">Oops, something went wrong!</h2>
-        <p className="mt-6 text-lg leading-8 text-gray-400">
+        <p className="mt-6 text-lg leading-8 text-neutral-400">
           {error.message}
         </p>
       </div>
@@ -35,7 +35,7 @@ export default function Error({
         >
           Try again
         </button>
-        <Link href="/vendor/dashboard" className="text-sm font-semibold leading-6 text-gray-900">
+        <Link href="/vendor/dashboard" className="text-sm font-semibold leading-6 text-neutral-900">
           Exit this page <span aria-hidden="true">→</span>
         </Link>
       </div>

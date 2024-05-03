@@ -38,10 +38,10 @@ export default function FrontPage() {
         <div className="pb-80 pt-16 sm:pb-40 sm:pt-24 lg:pb-48 lg:pt-40">
           <div className="relative mx-auto max-w-7xl px-4 sm:static sm:px-6 lg:px-8">
             <div className="sm:max-w-lg">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+              <h1 className="text-4xl font-bold tracking-tight text-neutral-900 sm:text-6xl">
                 Summer styles are finally here
               </h1>
-              <p className="mt-4 text-xl text-gray-500">
+              <p className="mt-4 text-xl text-neutral-500">
                 This year, our new summer collection will shelter you from the
                 harsh elements of a world that doesn't care if you live or die.
               </p>
@@ -128,12 +128,12 @@ export default function FrontPage() {
 
       <main>
         {/* Category section */}
-        <section aria-labelledby="category-heading" className="bg-gray-50">
+        <section aria-labelledby="category-heading" className="bg-neutral-50">
           <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
             <div className="sm:flex sm:items-baseline sm:justify-between">
               <h2
                 id="category-heading"
-                className="text-2xl font-bold tracking-tight text-gray-900"
+                className="text-2xl font-bold tracking-tight text-neutral-900"
               >
                 Shop by Category
               </h2>
@@ -235,7 +235,7 @@ export default function FrontPage() {
 
         {/* Featured section */}
         <section aria-labelledby="cause-heading">
-          <div className="relative bg-gray-800 px-6 py-32 sm:px-12 sm:py-40 lg:px-16">
+          <div className="relative bg-neutral-800 px-6 py-32 sm:px-12 sm:py-40 lg:px-16">
             <div className="absolute inset-0 overflow-hidden">
               <img
                 src="https://tailwindui.com/img/ecommerce-images/home-page-03-feature-section-full-width.jpg"
@@ -245,7 +245,7 @@ export default function FrontPage() {
             </div>
             <div
               aria-hidden="true"
-              className="absolute inset-0 bg-gray-900 bg-opacity-50"
+              className="absolute inset-0 bg-neutral-900 bg-opacity-50"
             />
             <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
               <h2
@@ -262,7 +262,7 @@ export default function FrontPage() {
               </p>
               <a
                 href="#"
-                className="mt-8 block w-full rounded-md border border-transparent bg-white px-8 py-3 text-base font-medium text-gray-900 hover:bg-gray-100 sm:w-auto"
+                className="mt-8 block w-full rounded-md border border-transparent bg-white px-8 py-3 text-base font-medium text-neutral-900 hover:bg-neutral-100 sm:w-auto"
               >
                 Read our story
               </a>
@@ -276,7 +276,7 @@ export default function FrontPage() {
             <div className="sm:flex sm:items-baseline sm:justify-between">
               <h2
                 id="favorites-heading"
-                className="text-2xl font-bold tracking-tight text-gray-900"
+                className="text-2xl font-bold tracking-tight text-neutral-900"
               >
                 Our Favorites
               </h2>
@@ -299,13 +299,13 @@ export default function FrontPage() {
                       className="h-full w-full object-cover object-center"
                     />
                   </div>
-                  <h3 className="mt-4 text-base font-semibold text-gray-900">
+                  <h3 className="mt-4 text-base font-semibold text-neutral-900">
                     <a href={favorite.href}>
                       <span className="absolute inset-0" />
                       {favorite.name}
                     </a>
                   </h3>
-                  <p className="mt-1 text-sm text-gray-500">{favorite.price}</p>
+                  <p className="mt-1 text-sm text-neutral-500">{favorite.price}</p>
                 </div>
               ))}
             </div>
@@ -325,7 +325,7 @@ export default function FrontPage() {
         {/* CTA section */}
         <section aria-labelledby="sale-heading">
           <div className="overflow-hidden pt-32 sm:pt-14">
-            <div className="bg-gray-800">
+            <div className="bg-neutral-800">
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="relative pb-16 pt-48 sm:pb-24">
                   <div>

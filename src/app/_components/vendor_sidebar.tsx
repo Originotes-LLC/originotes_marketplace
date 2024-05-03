@@ -73,7 +73,7 @@ export default function VendorSidebar() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-900/80" />
+            <div className="fixed inset-0 bg-neutral-900/80" />
           </Transition.Child>
 
           <div className="fixed inset-0 flex">
@@ -111,7 +111,7 @@ export default function VendorSidebar() {
                   </div>
                 </Transition.Child>
                 {/* Sidebar component for smaller screens, swap this element with another sidebar if you like */}
-                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-50 px-6 pb-2 ring-1 ring-white/10 dark:bg-gray-700">
+                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-neutral-50 px-6 pb-2 ring-1 ring-white/10 dark:bg-foreground">
                   <div className="flex h-16 shrink-0 items-center">
                     <Image
                       className="h-12 w-auto rounded-full"
@@ -130,9 +130,9 @@ export default function VendorSidebar() {
                               <Link
                                 href={item.href}
                                 className={classNames(
-                                  pathname.startsWith(Array.isArray(item.href.split("?")) ? item.href.split("?")[0] : item.href)
-                                    ? "bg-gray-200 text-black"
-                                    : "text-gray-400 hover:text-gray-900 hover:bg-gray-100",
+                                  pathname.startsWith(item.href.split("?")[0] as string)
+                                    ? "bg-neutral-200 text-black"
+                                    : "text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100",
                                   "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                 )}
                               >
@@ -158,7 +158,7 @@ export default function VendorSidebar() {
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
         {/* Sidebar component, swap this element with another sidebar if you like */}
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-50 px-6 dark:bg-gray-700">
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-neutral-50 px-6 dark:bg-foreground">
           <div className="flex h-16 shrink-0 items-center">
             <Image
               className="h-12 w-auto rounded-full"
@@ -177,9 +177,9 @@ export default function VendorSidebar() {
                       <Link
                         href={item.href}
                         className={classNames(
-                          pathname.startsWith(item.href.split("?")[0])
-                            ? "bg-gray-200 text-black"
-                            : "text-gray-400 hover:text-gray-900 hover:bg-gray-100",
+                          pathname.startsWith(item.href.split("?")[0] as string)
+                            ? "bg-neutral-200 text-black"
+                            : "text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100",
                           "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                         )}
                       >
@@ -195,7 +195,7 @@ export default function VendorSidebar() {
               </li>
 
               <li className="-mx-6 mt-auto">
-                <div className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800">
+                <div className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-neutral-800">
                   <UserProfile />
                 </div>
               </li>
@@ -203,10 +203,10 @@ export default function VendorSidebar() {
           </nav>
         </div>
       </div>
-      <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 p-4 shadow-sm sm:px-6 lg:hidden">
+      <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-neutral-900 p-4 shadow-sm sm:px-6 lg:hidden">
         <button
           type="button"
-          className="-m-2.5 p-2.5 text-gray-400 lg:hidden"
+          className="-m-2.5 p-2.5 text-neutral-400 lg:hidden"
           onClick={() => setSidebarOpen(true)}
         >
           <span className="sr-only">Open sidebar</span>
