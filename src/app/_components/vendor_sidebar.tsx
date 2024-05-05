@@ -1,5 +1,6 @@
 "use client";
 
+import { Dialog, Transition } from "@headlessui/react";
 import {
   BanknotesIcon,
   Bars3Icon,
@@ -9,13 +10,12 @@ import {
   RectangleGroupIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { Fragment, useState } from "react";
 
+import UserProfile from "@/components/user_profile";
 import Image from "next/image";
 import Link from "next/link";
-import UserProfile from "@/components/user_profile";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -203,16 +203,16 @@ export default function VendorSidebar() {
           </nav>
         </div>
       </div>
-      <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-neutral-900 p-4 shadow-sm sm:px-6 lg:hidden">
+      <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-neutral-100 p-4 shadow-sm sm:px-6 lg:hidden">
         <button
           type="button"
-          className="-m-2.5 p-2.5 text-neutral-400 lg:hidden"
+          className="-m-2.5 p-2.5 text-foreground lg:hidden"
           onClick={() => setSidebarOpen(true)}
         >
           <span className="sr-only">Open sidebar</span>
           <Bars3Icon className="size-6" aria-hidden="true" />
         </button>
-        <div className="flex-1 text-sm font-semibold leading-6 text-white">
+        <div className="flex-1 text-sm font-semibold leading-6 text-foreground">
           Dashboard
         </div>
         <UserProfile />
