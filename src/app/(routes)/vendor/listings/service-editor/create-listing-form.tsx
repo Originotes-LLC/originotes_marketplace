@@ -1,5 +1,6 @@
 "use client";
 
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import {
   Command,
   CommandEmpty,
@@ -22,18 +23,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-import { type SubmitHandler, useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { ServiceListingSchema } from "@/lib/schema";
 import { ListingFormFooter } from "@/listings/service-editor/listing_form_footer";
+import { ServiceListingSchema } from "@/lib/schema";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/utils/shadcdn_utils";
+import { submitNewService } from "@/vendor/actions";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
-// import { submitNewService } from "@/vendor/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const languages = [
@@ -62,34 +62,34 @@ Fields needed to create a service
 - Service Description (content)
 */
 
-interface IFormInputs {
-  service_name: string;
-  service_description: string;
-  service_price: string;
-  service_category: string;
-}
+
 
 export const CreateListingForm = () => {
   const form = useForm<z.infer<typeof ServiceListingSchema>>({
+    mode: 'onChange',
     resolver: zodResolver(ServiceListingSchema),
     defaultValues: {
       service_name: "",
       service_description: "",
       service_category: "",
-      service_price: "",
+      service_price: 0,
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = (data) => {
-    console.log(`The form has no errors client side`, data);
-  };
+  const action: () => void = form.handleSubmit(async (data) => {
+    const res = await submitNewService(data);
+    console.log('res: ', res);
+  })
 
-  console.log("form errors: ", form.formState.errors);
+
+  const { errors } = form.formState;
+  console.log('errors: ', errors);
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        action={action}
+        // onSubmit={form.handleSubmit(onSubmit)}
         className="relative space-y-10 divide-y divide-neutral-900/10"
       >
         <div className="grid grid-cols-1 gap-8 pt-10 md:grid-cols-3">
@@ -103,7 +103,7 @@ export const CreateListingForm = () => {
             </p>
           </div>
 
-          <div className="shadow-sm ring-1 ring-neutral-900/5 dark:bg-foreground sm:rounded-xl md:col-span-2">
+          <div className="rounded-xl shadow-sm ring-1 ring-neutral-900/5 dark:bg-foreground md:col-span-2">
             <div className="px-4 py-6 sm:p-8">
               <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-4">
@@ -122,11 +122,11 @@ export const CreateListingForm = () => {
                             {...field}
                           />
                         </FormControl>
+                        <FormMessage />
                         <FormDescription className="dark:text-neutral-200">
                           This is the name of your service. Make it catchy and
                           descriptive.
                         </FormDescription>
-                        <FormMessage />
                       </FormItem>
                     )}
                   ></FormField>
@@ -141,16 +141,17 @@ export const CreateListingForm = () => {
                         <Label className="dark:text-background" htmlFor="service_description">Description</Label>
                         <FormControl>
                           <Textarea
+                            className="dark:text-background"
                             placeholder="Describe your service in detail."
                             {...field}
                           />
                         </FormControl>
+                        <FormMessage />
                         <FormDescription className="dark:text-neutral-200">
                           Elaborate what your service will provide if users were
                           to purchase it. Buyers will only see the first few
                           lines unless they expand the description.
                         </FormDescription>
-                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -219,10 +220,10 @@ export const CreateListingForm = () => {
                           </Command>
                         </PopoverContent>
                       </Popover>
+                      <FormMessage />
                       <FormDescription className="dark:text-neutral-200">
                         This is the language that will be used in the dashboard.
                       </FormDescription>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -234,7 +235,7 @@ export const CreateListingForm = () => {
         </div>
 
         {/* PRICING SECTION */}
-        <div className="grid grid-cols-1 gap-8 pb-32 pt-10 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 pb-64 pt-10 md:grid-cols-3">
           <div className="px-4 sm:px-0">
             <h2 className="text-base font-semibold leading-7 text-neutral-900 dark:text-background">
               Pricing & Inventory
@@ -244,20 +245,21 @@ export const CreateListingForm = () => {
             </p>
           </div>
 
-          <div className="bg-white shadow-sm ring-1 ring-neutral-900/5 dark:bg-foreground sm:rounded-xl md:col-span-2">
+          <div className="rounded-xl shadow-sm ring-1 ring-neutral-900/5 dark:bg-foreground md:col-span-2">
             <div className="px-4 py-6 sm:p-8">
-              <div className="max-w-2xl space-y-10">
+              <div className="relative max-w-2xl space-y-10">
                 <FormField
                   control={form.control}
                   name="service_price"
                   render={({ field }) => (
-                    <FormItem className="relative">
+                    <FormItem>
                       <FormLabel className="dark:text-background">Price</FormLabel>
                       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <span className="text-neutral-500 sm:text-sm">$</span>
                       </div>
                       <FormControl>
                         <Input
+                          type="number"
                           className="pl-7 pr-12 dark:text-background"
                           placeholder="15023"
                           {...field}
@@ -271,11 +273,11 @@ export const CreateListingForm = () => {
                           USD
                         </span>
                       </div>
+                      <FormMessage />
                       <FormDescription className="dark:text-background">
                         Set the price for your service. This will be the
                         standard price that buyers will see.
                       </FormDescription>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
