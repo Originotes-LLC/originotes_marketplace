@@ -12,7 +12,7 @@ type Vendor = {
   currency: string;
   name: string;
   date_created: string;
-  type: "individual" | "company"; // Assuming type can only be 'individual' or 'company'
+  type: "individual" | "company";
   order_count: number;
   order_value: number;
   balance: number;

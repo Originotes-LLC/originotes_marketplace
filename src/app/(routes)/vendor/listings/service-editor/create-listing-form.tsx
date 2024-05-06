@@ -36,17 +36,17 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const languages = [
-  { label: "English", value: "en" },
-  { label: "French", value: "fr" },
-  { label: "German", value: "de" },
-  { label: "Spanish", value: "es" },
-  { label: "Portuguese", value: "pt" },
-  { label: "Russian", value: "ru" },
-  { label: "Japanese", value: "ja" },
-  { label: "Korean", value: "ko" },
-  { label: "Chinese", value: "zh" },
-] as const;
+// const categorys = [
+//   { label: "English", value: "en" },
+//   { label: "French", value: "fr" },
+//   { label: "German", value: "de" },
+//   { label: "Spanish", value: "es" },
+//   { label: "Portuguese", value: "pt" },
+//   { label: "Russian", value: "ru" },
+//   { label: "Japanese", value: "ja" },
+//   { label: "Korean", value: "ko" },
+//   { label: "Chinese", value: "zh" },
+// ] as const;
 
 /*
 
@@ -62,9 +62,25 @@ Fields needed to create a service
 - Service Description (content)
 */
 
+interface Category {
+  name: string;
+  active: boolean;
+  sorting: null;
+  images: null;
+  description: string;
+  meta_title: null;
+  meta_description: null;
+  parent_id: null;
+  slug: string;
+  top_id: null;
+  date_created: string;
+  id: string;
+}
 
 
-export const CreateListingForm = () => {
+
+
+export const CreateListingForm = ({ categories }: { categories: Category[] }) => {
   const form = useForm<z.infer<typeof ServiceListingSchema>>({
     mode: 'onChange',
     resolver: zodResolver(ServiceListingSchema),
@@ -72,18 +88,18 @@ export const CreateListingForm = () => {
       service_name: "",
       service_description: "",
       service_category: "",
-      service_price: 0,
+      service_price: "",
     },
   });
 
   const action: () => void = form.handleSubmit(async (data) => {
-    const res = await submitNewService(data);
-    console.log('res: ', res);
+    const serverSideFormResponse = await submitNewService(data);
+    return serverSideFormResponse
   })
 
 
-  const { errors } = form.formState;
-  console.log('errors: ', errors);
+  // const { errors } = form.formState;
+  // console.log('errors: ', errors);
 
   return (
     <Form {...form}>
@@ -162,7 +178,7 @@ export const CreateListingForm = () => {
                   control={form.control}
                   name="service_category"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="col-span-full flex flex-col">
                       <FormLabel className="dark:text-background">Category</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -171,44 +187,44 @@ export const CreateListingForm = () => {
                               variant="outline"
                               role="combobox"
                               className={cn(
-                                "w-[200px] justify-between",
+                                "w-[300px] md:w-[600px] justify-between dark:bg-transparent dark:text-white",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
                               {field.value
-                                ? languages.find(
-                                  (language) => language.value === field.value
-                                )?.label
-                                : "Select language"}
+                                ? categories.find(
+                                  (category) => category.name === field.value
+                                )?.name
+                                : "Select category"}
                               <CaretSortIcon className="ml-2 size-4 shrink-0 opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[200px] p-0">
+                        <PopoverContent className="w-[300px] p-0 md:w-[600px]">
                           <Command>
                             <CommandInput
-                              placeholder="Search framework..."
+                              placeholder="Search a category..."
                               className="h-9"
                             />
-                            <CommandEmpty>No framework found.</CommandEmpty>
+                            <CommandEmpty>No categories found.</CommandEmpty>
                             <CommandGroup>
                               <CommandList>
-                                {languages.map((language) => (
+                                {categories.map((category) => (
                                   <CommandItem
-                                    key={language.value}
-                                    value={language.label}
+                                    key={category.id}
+                                    value={category.name}
                                     onSelect={() => {
                                       form.setValue(
                                         "service_category",
-                                        language.value
+                                        category.name
                                       );
                                     }}
                                   >
-                                    {language.label}
+                                    {category.name}
                                     <CheckIcon
                                       className={cn(
                                         "ml-auto h-4 w-4",
-                                        language.value === field.value
+                                        category.name === field.value
                                           ? "opacity-100"
                                           : "opacity-0"
                                       )}
@@ -222,7 +238,7 @@ export const CreateListingForm = () => {
                       </Popover>
                       <FormMessage />
                       <FormDescription className="dark:text-neutral-200">
-                        This is the language that will be used in the dashboard.
+                        This is the category that will be used in the dashboard.
                       </FormDescription>
                     </FormItem>
                   )}
@@ -259,7 +275,7 @@ export const CreateListingForm = () => {
                       </div>
                       <FormControl>
                         <Input
-                          type="number"
+                          type="string"
                           className="pl-7 pr-12 dark:text-background"
                           placeholder="15023"
                           {...field}
