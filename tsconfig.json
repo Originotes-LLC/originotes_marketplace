@@ -10,7 +10,8 @@
       "@/routes/*": ["(routes)/*"],
       "@/lib/*": ["_lib/*"],
       "@/listings/*": ["(routes)/vendor/listings/*"],
-      "@/vendor/*": ["(routes)/vendor/*"]
+      "@/vendor/*": ["(routes)/vendor/*"],
+      "@/types/*": ["_types/*"]
     },
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,

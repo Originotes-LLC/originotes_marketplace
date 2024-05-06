@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import "server-only";
 
 import swell from "./server";
@@ -10,7 +11,7 @@ export const createSwellBuyer = async (
 ) => {
   return await swell.post("/accounts", {
     clerk_id: id,
-    email: email,
+    email,
     first_name: firstName ?? "",
     last_name: lastName ?? "",
     email_optin: false,
@@ -24,7 +25,7 @@ export const updateSwellBuyer = async (
   last_name: string | null
 ) => {
   return await swell.put("/accounts/{id}", {
-    email: email,
+    email,
     first_name: first_name ?? "",
     last_name: last_name ?? "",
     group: "originotes_buyers",
