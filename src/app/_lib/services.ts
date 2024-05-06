@@ -1,94 +1,78 @@
+import { getAccountByClerkId } from "@/lib/get-account-by-clerk-id";
+import { getProductsByPage } from "@/lib/get-products-by-page";
+import { type ProductsPerPage } from "@/types/index";
+import { getErrorMessage } from "@/utils/get-error-message";
 import "server-only";
 
-import swell from "@/lib/server";
-
-type Vendor = {
-  clerk_id: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  email_optin: boolean;
-  group: string;
-  currency: string;
-  name: string;
-  date_created: string;
-  type: "individual" | "company";
-  order_count: number;
-  order_value: number;
-  balance: number;
-  id: string;
-};
-
-type CurrentVendor = {
-  count: number;
-  page_count: number;
-  page: number;
-  results: Vendor[];
-};
-
+/*
+  in case of an invalid PUT, POST, or DELETE request the Swell NODE library will return the SwellError type 
+  for GET cases it will throw an Error. As a RULE OF THUMB, all Swell GET cases NEED to be wrapped in a try/catch block, see file service-categories.ts for an example
+*/
 export const getServicesByVendorId = async (
   clerkId: string | undefined,
   page: number
-) => {
-  try {
-    // check if the page is a Number and if it's 1 or greater
-    if (isNaN(page) || page < 1)
-      throw new Error(
-        "The page number you are trying to access is invalid. Please provide a valid page number."
-      );
-    if (!clerkId) throw new Error("vendorId is required.");
-    const currentVendor: CurrentVendor = await swell.get("/accounts", {
-      clerk_id: clerkId,
-    });
+): Promise<ProductsPerPage | { message: string }> => {
+  // check if the page is a Number and if it's 1 or greater
+  if (isNaN(page) || page < 1) getErrorMessage("Invalid page number provided.");
 
-    if (!currentVendor)
-      throw new Error("There has been an error fetching the vendor");
+  if (!clerkId) getErrorMessage("vendorId is required.");
+
+  try {
+    // TODO: This should be replaced by the actual ID of the vendor in Swell, which you can probably get from the currently logged in user, aka sessions
+    const currentVendor = await getAccountByClerkId(clerkId);
+
+    if (currentVendor instanceof Error || "message" in currentVendor) {
+      return {
+        message: currentVendor.message,
+      };
+    }
 
     const { count } = currentVendor;
+    if (count === 0) {
+      return {
+        message: "No vendor found with the provided clerk id",
+      };
+    }
 
-    if (count === 1) {
+    if (Array.isArray(currentVendor.results) && currentVendor.results[0]) {
       const { id } = currentVendor.results[0];
+
       try {
-        const services = await swell.get("/products", {
-          where: {
-            content: {
-              vendor_id: id,
-            },
-          },
-          // TODO: Make sure you increase the limit to like 10 or 20 later per page
-          limit: 6,
-          page,
-          include: {
-            categories: {
-              url: "/categories",
-              params: {
-                id: { $in: "category_index.id" },
-              },
-              data: {
-                fields: ["name", "parent.name"],
-              },
-            },
-          },
-        });
+        const services = getProductsByPage(page, id);
+
+        if (services instanceof Error || "message" in services) {
+          const unknownError = getErrorMessage(services.message);
+          return {
+            message: unknownError,
+          };
+        }
+
         return services;
       } catch (error) {
-        console.log("error fetching services: ", error);
         if (error instanceof Error) {
-          return { message: error.message, error };
+          return {
+            message: error.message,
+          };
         }
-        return { message: "An error occurred while fetching services." };
+        const unknownError = getErrorMessage(error);
+        return {
+          message: unknownError,
+        };
       }
     } else {
       return {
-        message: "Vendor not found",
-        error: new Error("Vendor not found"),
+        message: "No vendor found with the provided clerk id",
       };
     }
   } catch (error) {
-    console.log("error fetching vendor: ", error);
     if (error instanceof Error) {
-      return { message: error.message, error };
+      return {
+        message: error.message,
+      };
     }
-    return { message: "An error occurred while fetching vendor." };
+    const unknownError = getErrorMessage(error);
+    return {
+      message: unknownError,
+    };
   }
 };

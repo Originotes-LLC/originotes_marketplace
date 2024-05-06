@@ -27,7 +27,7 @@ interface CategoryList {
 
 /*
   in case of an invalid PUT, POST, or DELETE request the Swell NODE library will return the SwellError type 
-  for GET cases it will throw an Error
+  for GET cases it will throw an Error. As a RULE OF THUMB, all Swell GET cases NEED to be wrapped in a try/catch block
 */
 
 export const serviceCategories = async (): Promise<
@@ -41,12 +41,12 @@ export const serviceCategories = async (): Promise<
     });
     return res;
   } catch (err) {
-    console.log(err);
     if (err instanceof Error) {
       return {
         message: err.message,
       };
     }
+    // this getErrorMessage is taken from an amazing Kent C Doods article, see the getErrorMessage reference function for more info
     const unknownError = getErrorMessage(err);
     return {
       message: unknownError,

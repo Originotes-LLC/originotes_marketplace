@@ -1,14 +1,15 @@
+/* eslint-disable camelcase */
 import "server-only";
 
 import {
   createSwellBuyer,
   deleteSwellBuyer,
   updateSwellBuyer,
-} from "../../_lib/account";
+} from "@/lib/account";
 
-import { Webhook } from "svix";
-import { WebhookEvent } from "@clerk/nextjs/server";
+import { type WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
+import { Webhook } from "svix";
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
@@ -63,31 +64,69 @@ export async function POST(req: Request) {
         const firstName = evt.data.first_name;
         const lastName = evt.data.last_name;
         const emails = evt.data.email_addresses;
-        await createSwellBuyer(
+
+        if (!emails[0]?.email_address) {
+          return new Response(
+            "No email was provided or incorrect email. Please provide a valid email.",
+            {
+              status: 400,
+            }
+          );
+        }
+        const newSwellAccount = await createSwellBuyer(
           id,
           emails[0].email_address,
           firstName,
           lastName
         );
-        return new Response("User created successfully in Swell", {
-          status: 200,
-        });
+
+        if ("errors" in newSwellAccount) {
+          throw new Error(
+            `Error creating user in Swell: ${newSwellAccount.errors.email.message}`
+          );
+        } else {
+          return new Response("User created successfully!", {
+            status: 200,
+          });
+        }
       }
       case "user.updated": {
         const firstName = evt.data.first_name;
         const lastName = evt.data.last_name;
         const emails = evt.data.email_addresses;
-        await updateSwellBuyer(emails[0].email_address, firstName, lastName);
-        return new Response("User updated successfully in Swell", {
-          status: 200,
-        });
+
+        if (!emails[0]?.email_address) {
+          throw new Error(
+            `No email was provided or incorrect email. Please provide a valid email.`
+          );
+        }
+        const updatedSwellAccount = await updateSwellBuyer(
+          emails[0].email_address,
+          firstName,
+          lastName
+        );
+        if ("errors" in updatedSwellAccount) {
+          throw new Error(
+            `Error updating user in Swell: ${updatedSwellAccount.errors.email.message}`
+          );
+        } else {
+          return new Response("User updated successfully!", {
+            status: 200,
+          });
+        }
       }
       case "user.deleted": {
         const clerkId = evt.data.id;
-        await deleteSwellBuyer(clerkId);
-        return new Response("User deleted successfully in Swell", {
-          status: 200,
-        });
+        const deletedSwellAccount = await deleteSwellBuyer(clerkId);
+        if ("errors" in deletedSwellAccount) {
+          throw new Error(
+            `Error deleting user in Swell: ${deletedSwellAccount.errors.email.message}`
+          );
+        } else {
+          return new Response("User deleted successfully!", {
+            status: 200,
+          });
+        }
       }
     }
   } catch (err) {

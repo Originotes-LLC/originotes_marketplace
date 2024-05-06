@@ -1,6 +1,5 @@
 "use client";
 
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import {
   Command,
   CommandEmpty,
@@ -23,18 +22,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ListingFormFooter } from "@/listings/service-editor/listing_form_footer";
-import { ServiceListingSchema } from "@/lib/schema";
 import { Textarea } from "@/components/ui/textarea";
+import { ServiceListingSchema } from "@/lib/schema";
+import { ListingFormFooter } from "@/listings/service-editor/listing_form_footer";
 import { cn } from "@/utils/shadcdn_utils";
 import { submitNewService } from "@/vendor/actions";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 // const categorys = [
 //   { label: "English", value: "en" },
@@ -99,7 +99,7 @@ export const CreateListingForm = ({ categories }: { categories: Category[] }) =>
 
 
   // const { errors } = form.formState;
-  // console.log('errors: ', errors);
+
 
   return (
     <Form {...form}>
