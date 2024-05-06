@@ -14,8 +14,6 @@ export const submitNewService = async (
     // Validate the form data
     const validatedFields = ServiceListingSchema.safeParse(formData);
 
-    console.log("validatedFields: ", JSON.stringify(validatedFields, null, 2));
-
     // Return early if the form data is invalid
     if (!validatedFields.success) {
       return {

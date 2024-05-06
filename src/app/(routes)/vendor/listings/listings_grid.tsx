@@ -1,88 +1,8 @@
-import Image from "next/image";
+import type { Product } from "@/types/index";
 import { formattedDate } from "@/utils/date_formats";
+import Image from "next/image";
 
-type CategoryResults = {
-  name: string;
-  id: string;
-};
-
-interface Categories {
-  count: number;
-  page_count: number;
-  page: number;
-  results: CategoryResults[];
-}
-
-interface ImageFile {
-  id: string;
-  date_uploaded: string;
-  length: number;
-  md5: string;
-  filename: string;
-  content_type: string;
-  url: string;
-  width: number;
-  height: number;
-}
-
-interface ImageObj {
-  file: ImageFile;
-  id: string;
-}
-
-interface PurchaseOption {
-  active: boolean;
-  price: number;
-  sale: boolean;
-  sale_price: number | null;
-  prices: number[];
-}
-
-interface Content {
-  vendor_id: string;
-}
-
-interface CategoryIndex {
-  sort: Record<string, number>;
-  id: string[];
-}
-
-interface Service {
-  name: string;
-  sku: string | null;
-  type: string;
-  active: boolean;
-  images: ImageObj[];
-  purchase_options: {
-    standard: PurchaseOption;
-  };
-  variable: boolean;
-  description: string;
-  tags: string[];
-  meta_title: string | null;
-  meta_description: string | null;
-  slug: string;
-  attributes: Record<string, any>;
-  delivery: any; // Adjust type accordingly
-  virtual: boolean;
-  bundle: any; // Adjust type accordingly
-  price: number;
-  stock_tracking: boolean;
-  options: any[]; // Adjust type accordingly
-  content: Content;
-  currency: string;
-  sale: boolean;
-  sale_price: number | null;
-  prices: number[];
-  date_created: string;
-  stock_status: any; // Adjust type accordingly
-  date_updated: string;
-  category_index: CategoryIndex;
-  id: string;
-  categories: Categories;
-}
-
-export const ListingsGrid = ({ services }: { services: Service[] }) => {
+export const ListingsGrid = ({ services }: { services: Product[] }) => {
 
 
   return (
@@ -95,13 +15,15 @@ export const ListingsGrid = ({ services }: { services: Service[] }) => {
               className="flex flex-col items-start justify-between"
             >
               <div className="relative w-full">
-                <Image
-                  width={service.images[0].file.width}
-                  height={service.images[0].file.height}
-                  src={service.images[0].file.url}
-                  alt=""
-                  className="aspect-[16/9] w-full rounded-2xl bg-neutral-100 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
-                />
+                {service?.images?.[0]?.file && (
+                  <Image
+                    width={service.images[0].file.width}
+                    height={service.images[0].file.height}
+                    src={service.images[0].file.url}
+                    alt=""
+                    className="aspect-[16/9] w-full rounded-2xl bg-neutral-100 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
+                  />
+                )}
                 <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-neutral-900/10" />
               </div>
               <div className="max-w-xl">
@@ -114,7 +36,7 @@ export const ListingsGrid = ({ services }: { services: Service[] }) => {
                   </time>
                   <div className="relative z-10 rounded-full bg-fuchsia-50 px-3 py-1.5 font-medium text-fuchsia-800 hover:bg-fuchsia-100">
                     {/* TODO: What if a service has multiple categories? Will you show them all? I don't think you have space here for that... */}
-                    {service.categories.results[0].name}
+                    {service?.categories?.results[0]?.name}
                   </div>
                 </div>
                 <div className="group relative">

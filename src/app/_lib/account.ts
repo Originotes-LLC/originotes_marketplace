@@ -1,14 +1,24 @@
 /* eslint-disable camelcase */
+import {
+  type DeletedSwelAccount,
+  type SwellAccount,
+  type SwellError,
+  type UpdatedSwellAccount,
+} from "@/types/index";
 import "server-only";
 
 import swell from "./server";
 
+/*
+TODO: What are the actual mandatory fields for creating a Swell account for the function createSwellBuyer?
+!Make sure we define this
+*/
 export const createSwellBuyer = async (
   id: string,
   email: string,
   firstName: string | null,
   lastName: string | null
-) => {
+): Promise<SwellAccount | SwellError> => {
   return await swell.post("/accounts", {
     clerk_id: id,
     email,
@@ -23,7 +33,7 @@ export const updateSwellBuyer = async (
   email: string,
   first_name: string | null,
   last_name: string | null
-) => {
+): Promise<UpdatedSwellAccount | SwellError> => {
   return await swell.put("/accounts/{id}", {
     email,
     first_name: first_name ?? "",
@@ -32,7 +42,9 @@ export const updateSwellBuyer = async (
   });
 };
 
-export const deleteSwellBuyer = async (id: string | undefined) => {
+export const deleteSwellBuyer = async (
+  id: string | undefined
+): Promise<DeletedSwelAccount | SwellError> => {
   if (!id)
     throw new Error(
       "No clerk id provided. Please ensure there is a clerk id provided to Swell."
