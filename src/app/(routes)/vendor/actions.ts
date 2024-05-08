@@ -7,9 +7,9 @@ export const submitNewService = async (
   formData: z.infer<typeof ServiceListingSchema>
 ) => {
   // write a function to simulate 3 seconds of wait time to test submission buttons
-  const wait = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
-  await wait(3000);
+  // const wait = (ms: number) =>
+  //   new Promise((resolve) => setTimeout(resolve, ms));
+  // await wait(3000);
   try {
     // Validate the form data
     const validatedFields = ServiceListingSchema.safeParse(formData);

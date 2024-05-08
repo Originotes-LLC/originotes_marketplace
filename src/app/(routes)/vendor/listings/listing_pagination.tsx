@@ -51,11 +51,11 @@ export const ListingPagination = ({
       )}
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
-          {pages ? (
+          {pages && pages[page] && typeof pages[page] === 'object' ? (
             <p className="text-sm text-neutral-700">
               Showing{" "}
-              <span className="font-medium">{pages && pages[page] && pages[page].start}</span>{" "}
-              to <span className="font-medium">{pages && pages[page] && pages[page].end}</span>{" "}
+              <span className="font-medium">{pages !== undefined ? pages[page]?.start : 1}</span>{" "}
+              to <span className="font-medium">{pages !== undefined ? pages[page]?.end : 1}</span>{" "}
               of <span className="font-medium">{count}</span> results
             </p>
           ) : (

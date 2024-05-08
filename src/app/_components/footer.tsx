@@ -1,4 +1,4 @@
-import { JSX, SVGProps } from "react"
+import { type JSX, type SVGProps } from "react"
 
 import Image from "next/image"
 
@@ -115,7 +115,7 @@ export default function Footer() {
               {navigation.social.map((item) => (
                 <a key={item.name} href={item.href} className="text-neutral-400 hover:text-neutral-500">
                   <span className="sr-only">{item.name}</span>
-                  <item.icon className="h-6 w-6" aria-hidden="true" />
+                  <item.icon className="size-6" aria-hidden="true" />
                 </a>
               ))}
             </div>

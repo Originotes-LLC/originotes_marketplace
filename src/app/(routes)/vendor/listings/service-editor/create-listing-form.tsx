@@ -1,5 +1,6 @@
 "use client";
 
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import {
   Command,
   CommandEmpty,
@@ -22,19 +23,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { ServiceListingSchema } from "@/lib/schema";
+import { ListingFileUpload } from "@/listings/service-editor/listing-file-upload";
 import { ListingFormFooter } from "@/listings/service-editor/listing_form_footer";
+import { ServiceListingSchema } from "@/lib/schema";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/utils/shadcdn_utils";
 import { submitNewService } from "@/vendor/actions";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // const categorys = [
 //   { label: "English", value: "en" },
@@ -77,12 +78,13 @@ interface Category {
   id: string;
 }
 
-
-
-
-export const CreateListingForm = ({ categories }: { categories: Category[] }) => {
+export const CreateListingForm = ({
+  categories,
+}: {
+  categories: Category[];
+}) => {
   const form = useForm<z.infer<typeof ServiceListingSchema>>({
-    mode: 'onChange',
+    mode: "onChange",
     resolver: zodResolver(ServiceListingSchema),
     defaultValues: {
       service_name: "",
@@ -93,13 +95,16 @@ export const CreateListingForm = ({ categories }: { categories: Category[] }) =>
   });
 
   const action: () => void = form.handleSubmit(async (data) => {
+    console.log('form data client side: ', JSON.stringify(data, null, 2));
+
     const serverSideFormResponse = await submitNewService(data);
-    return serverSideFormResponse
-  })
+    return serverSideFormResponse;
+  });
 
+  const { errors } = form.formState;
+  console.log('errors: ', errors);
 
-  // const { errors } = form.formState;
-
+  const fileFormRef = form.register("service_files")
 
   return (
     <Form {...form}>
@@ -123,12 +128,18 @@ export const CreateListingForm = ({ categories }: { categories: Category[] }) =>
             <div className="px-4 py-6 sm:p-8">
               <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-4">
+                  {/* Service NAME section */}
                   <FormField
                     name="service_name"
                     control={form.control}
                     render={({ field }) => (
                       <FormItem>
-                        <Label className="dark:text-background" htmlFor="service_name">Name</Label>
+                        <Label
+                          className="dark:text-background"
+                          htmlFor="service_name"
+                        >
+                          Name
+                        </Label>
                         <FormControl>
                           <Input
                             className="dark:text-background"
@@ -145,16 +156,21 @@ export const CreateListingForm = ({ categories }: { categories: Category[] }) =>
                         </FormDescription>
                       </FormItem>
                     )}
-                  ></FormField>
+                  />
                 </div>
-
+                {/* Service DESCRIPTION Section */}
                 <div className="col-span-full">
                   <FormField
                     control={form.control}
                     name="service_description"
                     render={({ field }) => (
                       <FormItem>
-                        <Label className="dark:text-background" htmlFor="service_description">Description</Label>
+                        <Label
+                          className="dark:text-background"
+                          htmlFor="service_description"
+                        >
+                          Description
+                        </Label>
                         <FormControl>
                           <Textarea
                             className="dark:text-background"
@@ -172,14 +188,20 @@ export const CreateListingForm = ({ categories }: { categories: Category[] }) =>
                     )}
                   />
                 </div>
+                {/* Service FILE Upload Section */}
+                <div className="col-span-full">
+                  <ListingFileUpload fileFormRef={fileFormRef} />
+                </div>
 
-                {/* CATEGORIES */}
+                {/* Service CATEGORIES Section */}
                 <FormField
                   control={form.control}
                   name="service_category"
                   render={({ field }) => (
                     <FormItem className="col-span-full flex flex-col">
-                      <FormLabel className="dark:text-background">Category</FormLabel>
+                      <FormLabel className="dark:text-background">
+                        Category
+                      </FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -243,8 +265,6 @@ export const CreateListingForm = ({ categories }: { categories: Category[] }) =>
                     </FormItem>
                   )}
                 />
-
-                {/* Photos uploader will go here below */}
               </div>
             </div>
           </div>
@@ -269,7 +289,9 @@ export const CreateListingForm = ({ categories }: { categories: Category[] }) =>
                   name="service_price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="dark:text-background">Price</FormLabel>
+                      <FormLabel className="dark:text-background">
+                        Price
+                      </FormLabel>
                       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <span className="text-neutral-500 sm:text-sm">$</span>
                       </div>
