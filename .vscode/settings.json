@@ -3,6 +3,7 @@
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
   "editor.fontSize": 14,
+  "workbench.sideBar.location": "right",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always",
     "source.organizeImports": "always",
