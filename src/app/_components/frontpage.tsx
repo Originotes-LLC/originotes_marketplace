@@ -43,7 +43,7 @@ export default function FrontPage() {
               </h1>
               <p className="mt-4 text-xl text-neutral-500">
                 This year, our new summer collection will shelter you from the
-                harsh elements of a world that doesn't care if you live or die.
+                harsh elements of a world that does not care if you live or die.
               </p>
             </div>
             <div>
@@ -53,60 +53,60 @@ export default function FrontPage() {
                   aria-hidden="true"
                   className="pointer-events-none lg:absolute lg:inset-y-0 lg:mx-auto lg:w-full lg:max-w-7xl"
                 >
-                  <div className="absolute transform sm:left-1/2 sm:top-0 sm:translate-x-8 lg:left-1/2 lg:top-1/2 lg:-translate-y-1/2 lg:translate-x-8">
+                  <div className="absolute sm:left-1/2 sm:top-0 sm:translate-x-8 lg:left-1/2 lg:top-1/2 lg:-translate-y-1/2 lg:translate-x-8">
                     <div className="flex items-center space-x-6 lg:space-x-8">
-                      <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
+                      <div className="grid shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                         <div className="h-64 w-44 overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100">
                           <img
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-01.jpg"
                             alt=""
-                            className="h-full w-full object-cover object-center"
+                            className="size-full object-cover object-center"
                           />
                         </div>
                         <div className="h-64 w-44 overflow-hidden rounded-lg">
                           <img
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-02.jpg"
                             alt=""
-                            className="h-full w-full object-cover object-center"
+                            className="size-full object-cover object-center"
                           />
                         </div>
                       </div>
-                      <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
+                      <div className="grid shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                         <div className="h-64 w-44 overflow-hidden rounded-lg">
                           <img
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-03.jpg"
                             alt=""
-                            className="h-full w-full object-cover object-center"
+                            className="size-full object-cover object-center"
                           />
                         </div>
                         <div className="h-64 w-44 overflow-hidden rounded-lg">
                           <img
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-04.jpg"
                             alt=""
-                            className="h-full w-full object-cover object-center"
+                            className="size-full object-cover object-center"
                           />
                         </div>
                         <div className="h-64 w-44 overflow-hidden rounded-lg">
                           <img
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-05.jpg"
                             alt=""
-                            className="h-full w-full object-cover object-center"
+                            className="size-full object-cover object-center"
                           />
                         </div>
                       </div>
-                      <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
+                      <div className="grid shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                         <div className="h-64 w-44 overflow-hidden rounded-lg">
                           <img
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-06.jpg"
                             alt=""
-                            className="h-full w-full object-cover object-center"
+                            className="size-full object-cover object-center"
                           />
                         </div>
                         <div className="h-64 w-44 overflow-hidden rounded-lg">
                           <img
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-07.jpg"
                             alt=""
-                            className="h-full w-full object-cover object-center"
+                            className="size-full object-cover object-center"
                           />
                         </div>
                       </div>
@@ -175,7 +175,7 @@ export default function FrontPage() {
                 <img
                   src="https://tailwindui.com/img/ecommerce-images/home-page-03-category-01.jpg"
                   alt="Wooden shelf with gray and olive drab green baseball caps, next to wooden clothes hanger with sweaters."
-                  className="object-cover object-center group-hover:opacity-75 sm:absolute sm:inset-0 sm:h-full sm:w-full"
+                  className="object-cover object-center group-hover:opacity-75 sm:absolute sm:inset-0 sm:size-full"
                 />
                 <div
                   aria-hidden="true"
@@ -199,7 +199,7 @@ export default function FrontPage() {
                 <img
                   src="https://tailwindui.com/img/ecommerce-images/home-page-03-category-02.jpg"
                   alt="Walnut desk organizer set with white modular trays, next to porcelain mug on wooden desk."
-                  className="object-cover object-center group-hover:opacity-75 sm:absolute sm:inset-0 sm:h-full sm:w-full"
+                  className="object-cover object-center group-hover:opacity-75 sm:absolute sm:inset-0 sm:size-full"
                 />
                 <div
                   aria-hidden="true"
@@ -240,7 +240,7 @@ export default function FrontPage() {
               <img
                 src="https://tailwindui.com/img/ecommerce-images/home-page-03-feature-section-full-width.jpg"
                 alt=""
-                className="h-full w-full object-cover object-center"
+                className="size-full object-cover object-center"
               />
             </div>
             <div
@@ -255,9 +255,9 @@ export default function FrontPage() {
                 Long-term thinking
               </h2>
               <p className="mt-3 text-xl text-white">
-                We're committed to responsible, sustainable, and ethical
+                We are committed to responsible, sustainable, and ethical
                 manufacturing. Our small-scale approach allows us to focus on
-                quality and reduce our impact. We're doing our best to delay the
+                quality and reduce our impact. We are doing our best to delay the
                 inevitable heat-death of the universe.
               </p>
               <a
@@ -296,7 +296,7 @@ export default function FrontPage() {
                     <img
                       src={favorite.imageSrc}
                       alt={favorite.imageAlt}
-                      className="h-full w-full object-cover object-center"
+                      className="size-full object-cover object-center"
                     />
                   </div>
                   <h3 className="mt-4 text-base font-semibold text-neutral-900">
@@ -345,54 +345,54 @@ export default function FrontPage() {
                     </div>
                   </div>
 
-                  <div className="absolute -top-32 left-1/2 -translate-x-1/2 transform sm:top-6 sm:translate-x-0">
+                  <div className="absolute -top-32 left-1/2 -translate-x-1/2 sm:top-6 sm:translate-x-0">
                     <div className="ml-24 flex min-w-max space-x-6 sm:ml-3 lg:space-x-8">
                       <div className="flex space-x-6 sm:flex-col sm:space-x-0 sm:space-y-6 lg:space-y-8">
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                           <img
-                            className="h-64 w-64 rounded-lg object-cover md:h-72 md:w-72"
+                            className="size-64 rounded-lg object-cover md:size-72"
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-category-01.jpg"
                             alt=""
                           />
                         </div>
 
-                        <div className="mt-6 flex-shrink-0 sm:mt-0">
+                        <div className="mt-6 shrink-0 sm:mt-0">
                           <img
-                            className="h-64 w-64 rounded-lg object-cover md:h-72 md:w-72"
+                            className="size-64 rounded-lg object-cover md:size-72"
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-category-02.jpg"
                             alt=""
                           />
                         </div>
                       </div>
                       <div className="flex space-x-6 sm:-mt-20 sm:flex-col sm:space-x-0 sm:space-y-6 lg:space-y-8">
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                           <img
-                            className="h-64 w-64 rounded-lg object-cover md:h-72 md:w-72"
+                            className="size-64 rounded-lg object-cover md:size-72"
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-01.jpg"
                             alt=""
                           />
                         </div>
 
-                        <div className="mt-6 flex-shrink-0 sm:mt-0">
+                        <div className="mt-6 shrink-0 sm:mt-0">
                           <img
-                            className="h-64 w-64 rounded-lg object-cover md:h-72 md:w-72"
+                            className="size-64 rounded-lg object-cover md:size-72"
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-02.jpg"
                             alt=""
                           />
                         </div>
                       </div>
                       <div className="flex space-x-6 sm:flex-col sm:space-x-0 sm:space-y-6 lg:space-y-8">
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                           <img
-                            className="h-64 w-64 rounded-lg object-cover md:h-72 md:w-72"
+                            className="size-64 rounded-lg object-cover md:size-72"
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-category-01.jpg"
                             alt=""
                           />
                         </div>
 
-                        <div className="mt-6 flex-shrink-0 sm:mt-0">
+                        <div className="mt-6 shrink-0 sm:mt-0">
                           <img
-                            className="h-64 w-64 rounded-lg object-cover md:h-72 md:w-72"
+                            className="size-64 rounded-lg object-cover md:size-72"
                             src="https://tailwindui.com/img/ecommerce-images/home-page-03-category-02.jpg"
                             alt=""
                           />
