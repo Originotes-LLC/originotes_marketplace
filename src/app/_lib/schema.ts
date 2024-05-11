@@ -1,10 +1,5 @@
 import { z } from "zod";
-// const ACCEPTED_IMAGE_TYPES = [
-//   "image/jpeg",
-//   "image/jpg",
-//   "image/png",
-//   "image/webp",
-// ];
+
 export const ServiceListingSchema = z.object({
   service_name: z
     .string()
@@ -14,17 +9,45 @@ export const ServiceListingSchema = z.object({
     .string()
     .min(10, "Service description must be at least 10 characters")
     .max(500, "Service description must be at most 500 characters"),
-  service_category: z.string(),
+  service_category: z.string({
+    required_error:
+      "Service category is required. Please select a category for your service",
+  }),
   service_price: z.string({
     required_error:
       "Service price is required. Please enter a valid price for your service",
   }),
-  service_files: z.any().refine((file: string) => {
-    return true;
-  }, "Please update or add new image."),
+  service_files: z.any().transform((str, ctx) => {
+    try {
+      const parsedFiles: File[] = JSON.parse(str);
+      // we need to account for server side where Window is not defined so we cannot validate instanceof File because it doesn't exist on the server
 
-  // .refine((file) => {
-  //   console.log("does these files get accepted in the backend?: ", file);
-  //   return ACCEPTED_IMAGE_TYPES.includes(file?.type);
-  // }, ".jpg, .jpeg, .png and .webp files are accepted."),
+      if (typeof window === "undefined") {
+        //  validate Files server side
+        return parsedFiles.every(
+          (file) =>
+            Object.prototype.hasOwnProperty.call(file, "preview") &&
+            Object.prototype.hasOwnProperty.call(file, "path")
+        );
+      } else {
+        // validate Files client side
+        return parsedFiles.every((file) => file instanceof File);
+      }
+    } catch (e) {
+      console.log("Error parsing files: ", e);
+      if (e instanceof Error) {
+        ctx.addIssue({
+          code: "custom",
+          message: e.message,
+        });
+        return z.NEVER;
+      } else {
+        ctx.addIssue({
+          code: "custom",
+          message: `Error parsing files: ${JSON.stringify(e)}`,
+        });
+        return z.NEVER;
+      }
+    }
+  }),
 });

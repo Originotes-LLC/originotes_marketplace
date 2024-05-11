@@ -34,20 +34,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/utils/shadcdn_utils";
 import { submitNewService } from "@/vendor/actions";
 import { useForm } from "react-hook-form";
+import { useFormState } from "react-dom";
+import { useRef } from "react";
+import { useSelectedFiles } from "@/listings/service-editor/_hooks/useSelectedFiles";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-// const categorys = [
-//   { label: "English", value: "en" },
-//   { label: "French", value: "fr" },
-//   { label: "German", value: "de" },
-//   { label: "Spanish", value: "es" },
-//   { label: "Portuguese", value: "pt" },
-//   { label: "Russian", value: "ru" },
-//   { label: "Japanese", value: "ja" },
-//   { label: "Korean", value: "ko" },
-//   { label: "Chinese", value: "zh" },
-// ] as const;
 
 /*
 
@@ -78,11 +69,18 @@ interface Category {
   id: string;
 }
 
+const initialState = {
+  message: "",
+  issues: {},
+};
+
 export const CreateListingForm = ({
   categories,
 }: {
   categories: Category[];
 }) => {
+  const [state, formAction] = useFormState(submitNewService, initialState)
+  const { formFiles, getRootProps, getInputProps } = useSelectedFiles()
   const form = useForm<z.infer<typeof ServiceListingSchema>>({
     mode: "onChange",
     resolver: zodResolver(ServiceListingSchema),
@@ -94,23 +92,25 @@ export const CreateListingForm = ({
     },
   });
 
-  const action: () => void = form.handleSubmit(async (data) => {
-    console.log('form data client side: ', JSON.stringify(data, null, 2));
 
-    const serverSideFormResponse = await submitNewService(data);
-    return serverSideFormResponse;
-  });
 
+
+  const formRef = useRef<HTMLFormElement>(null);
   const { errors } = form.formState;
-  console.log('errors: ', errors);
-
-  const fileFormRef = form.register("service_files")
-
+  console.log("errors: ", errors);
+  const hiddenFormFiles = form.register("service_files")
   return (
     <Form {...form}>
+      <div className="text-xl font-semibold text-red-500">{JSON.stringify(state?.issues, null, 2)}</div>
       <form
-        action={action}
-        // onSubmit={form.handleSubmit(onSubmit)}
+        ref={formRef}
+        action={formAction}
+        onSubmit={(evt) => {
+          evt.preventDefault();
+          form.handleSubmit(() => {
+            formAction(new FormData(formRef.current!));
+          })(evt);
+        }}
         className="relative space-y-10 divide-y divide-neutral-900/10"
       >
         <div className="grid grid-cols-1 gap-8 pt-10 md:grid-cols-3">
@@ -190,7 +190,7 @@ export const CreateListingForm = ({
                 </div>
                 {/* Service FILE Upload Section */}
                 <div className="col-span-full">
-                  <ListingFileUpload fileFormRef={fileFormRef} />
+                  <ListingFileUpload formFiles={formFiles} getRootProps={getRootProps} getInputProps={getInputProps} hiddenFormFiles={hiddenFormFiles} />
                 </div>
 
                 {/* Service CATEGORIES Section */}
@@ -206,6 +206,7 @@ export const CreateListingForm = ({
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
+
                               variant="outline"
                               role="combobox"
                               className={cn(
@@ -213,6 +214,7 @@ export const CreateListingForm = ({
                                 !field.value && "text-muted-foreground"
                               )}
                             >
+                              <input type="hidden" {...field} name="service_category" />
                               {field.value
                                 ? categories.find(
                                   (category) => category.name === field.value
@@ -260,7 +262,7 @@ export const CreateListingForm = ({
                       </Popover>
                       <FormMessage />
                       <FormDescription className="dark:text-neutral-200">
-                        This is the category that will be used in the dashboard.
+                        This is the category that users will use to find your services.
                       </FormDescription>
                     </FormItem>
                   )}
