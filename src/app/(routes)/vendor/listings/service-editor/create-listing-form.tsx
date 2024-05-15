@@ -1,6 +1,7 @@
 "use client";
 
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+/* eslint-disable tailwindcss/no-custom-classname */
 import {
   Command,
   CommandEmpty,
@@ -25,6 +26,8 @@ import {
 } from "@/components/ui/popover";
 
 import { Button } from "@/components/ui/button";
+import { GridUploadInput } from "@/listings/service-editor/grid-upload-input";
+import { ImageVideoGrid } from "@/listings/service-editor/image-grid";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ListingFileUpload } from "@/listings/service-editor/listing-file-upload";
@@ -36,7 +39,7 @@ import { submitNewService } from "@/vendor/actions";
 import { useForm } from "react-hook-form";
 import { useFormState } from "react-dom";
 import { useRef } from "react";
-import { useSelectedFiles } from "@/listings/service-editor/_hooks/useSelectedFiles";
+import { useUploadImages } from "@/listings/service-editor/_hooks/useUploadImages";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -79,8 +82,8 @@ export const CreateListingForm = ({
 }: {
   categories: Category[];
 }) => {
-  const [state, formAction] = useFormState(submitNewService, initialState)
-  const { formFiles, getRootProps, getInputProps } = useSelectedFiles()
+  const [state, formAction] = useFormState(submitNewService, initialState);
+  const { files, formFiles, getRootProps, getInputProps } = useUploadImages();
   const form = useForm<z.infer<typeof ServiceListingSchema>>({
     mode: "onChange",
     resolver: zodResolver(ServiceListingSchema),
@@ -93,15 +96,14 @@ export const CreateListingForm = ({
   });
 
 
-
-
   const formRef = useRef<HTMLFormElement>(null);
-  const { errors } = form.formState;
-  console.log("errors: ", errors);
-  const hiddenFormFiles = form.register("service_files")
+  // const { errors } = form.formState;
+  const hiddenFormFiles = form.register("service_files");
   return (
     <Form {...form}>
-      <div className="text-xl font-semibold text-red-500">{JSON.stringify(state?.issues, null, 2)}</div>
+      <div className="text-xl font-semibold text-red-500">
+        {JSON.stringify(state?.issues, null, 2)}
+      </div>
       <form
         ref={formRef}
         action={formAction}
@@ -115,7 +117,7 @@ export const CreateListingForm = ({
       >
         <div className="grid grid-cols-1 gap-8 pt-10 md:grid-cols-3">
           <div className="px-4 sm:px-0">
-            <h2 className="text-base font-semibold leading-7 text-neutral-900 dark:text-background">
+            <h2 className="dark:text-background text-base font-semibold leading-7 text-neutral-900">
               Service Details
             </h2>
             <p className="mt-1 text-sm leading-6 text-neutral-600 dark:text-neutral-200">
@@ -124,7 +126,7 @@ export const CreateListingForm = ({
             </p>
           </div>
 
-          <div className="rounded-xl shadow-sm ring-1 ring-neutral-900/5 dark:bg-foreground md:col-span-2">
+          <div className="dark:bg-foreground rounded-xl shadow-sm ring-1 ring-neutral-900/5 md:col-span-2">
             <div className="px-4 py-6 sm:p-8">
               <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-4">
@@ -190,7 +192,17 @@ export const CreateListingForm = ({
                 </div>
                 {/* Service FILE Upload Section */}
                 <div className="col-span-full">
-                  <ListingFileUpload formFiles={formFiles} getRootProps={getRootProps} getInputProps={getInputProps} hiddenFormFiles={hiddenFormFiles} />
+                  {files && files.length > 0 ? (
+                    <ImageVideoGrid files={files} uploadBtn={<GridUploadInput getRootProps={getRootProps}
+                      getInputProps={getInputProps} />} />
+                  ) : (
+                    <ListingFileUpload
+                      formFiles={formFiles}
+                      getRootProps={getRootProps}
+                      getInputProps={getInputProps}
+                      hiddenFormFiles={hiddenFormFiles}
+                    />
+                  )}
                 </div>
 
                 {/* Service CATEGORIES Section */}
@@ -206,7 +218,6 @@ export const CreateListingForm = ({
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
-
                               variant="outline"
                               role="combobox"
                               className={cn(
@@ -214,7 +225,11 @@ export const CreateListingForm = ({
                                 !field.value && "text-muted-foreground"
                               )}
                             >
-                              <input type="hidden" {...field} name="service_category" />
+                              <input
+                                type="hidden"
+                                {...field}
+                                name="service_category"
+                              />
                               {field.value
                                 ? categories.find(
                                   (category) => category.name === field.value
@@ -262,7 +277,8 @@ export const CreateListingForm = ({
                       </Popover>
                       <FormMessage />
                       <FormDescription className="dark:text-neutral-200">
-                        This is the category that users will use to find your services.
+                        This is the category that users will use to find your
+                        services.
                       </FormDescription>
                     </FormItem>
                   )}
@@ -275,15 +291,15 @@ export const CreateListingForm = ({
         {/* PRICING SECTION */}
         <div className="grid grid-cols-1 gap-8 pb-64 pt-10 md:grid-cols-3">
           <div className="px-4 sm:px-0">
-            <h2 className="text-base font-semibold leading-7 text-neutral-900 dark:text-background">
+            <h2 className="dark:text-background text-base font-semibold leading-7 text-neutral-900">
               Pricing & Inventory
             </h2>
-            <p className="mt-1 text-sm leading-6 text-neutral-600 dark:text-background">
+            <p className="dark:text-background mt-1 text-sm leading-6 text-neutral-600">
               Set the price and availability of your service.
             </p>
           </div>
 
-          <div className="rounded-xl shadow-sm ring-1 ring-neutral-900/5 dark:bg-foreground md:col-span-2">
+          <div className="dark:bg-foreground rounded-xl shadow-sm ring-1 ring-neutral-900/5 md:col-span-2">
             <div className="px-4 py-6 sm:p-8">
               <div className="relative max-w-2xl space-y-10">
                 <FormField
@@ -300,14 +316,14 @@ export const CreateListingForm = ({
                       <FormControl>
                         <Input
                           type="string"
-                          className="pl-7 pr-12 dark:text-background"
+                          className="dark:text-background pl-7 pr-12"
                           placeholder="15023"
                           {...field}
                         />
                       </FormControl>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                         <span
-                          className="text-neutral-500 dark:text-background sm:text-sm"
+                          className="dark:text-background text-neutral-500 sm:text-sm"
                           id="price-currency"
                         >
                           USD

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useFormStatus } from "react-dom";
 
 export const ListingFormFooter = () => {
+
   const { pending } = useFormStatus();
   return (
     <footer className="bg-neutral-100 dark:bg-neutral-800">

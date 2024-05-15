@@ -2,7 +2,7 @@ import { serviceCategories } from "@/lib/service-categories";
 import { CreateListingForm } from "@/listings/service-editor/create-listing-form";
 import { ServiceEditorHeader } from "@/listings/service-editor/service-editor-header";
 import { type SwellResponse } from "@/types/index";
-
+/* eslint-disable tailwindcss/no-custom-classname */
 
 interface Category {
   name: string;
@@ -28,9 +28,9 @@ export default async function ServiceEditor() {
   }
 
   return (
-    <main className="flex size-full flex-col py-6 dark:bg-neutral-900 lg:pl-72">
+    <main className="flex size-full flex-col py-6 lg:pl-72 dark:bg-neutral-900">
       <ServiceEditorHeader />
-      <div className="px-6 py-12 dark:bg-neutral-900 lg:px-8">
+      <div className="px-6 py-12 lg:px-8 dark:bg-neutral-900">
         <CreateListingForm categories={categories?.results} />
       </div>
     </main>
