@@ -1,5 +1,5 @@
 import { PhotoIcon } from "@heroicons/react/24/solid";
-
+/* eslint-disable tailwindcss/no-custom-classname */
 //
 export function ListingFileUpload({ formFiles, getRootProps, getInputProps, hiddenFormFiles }: {
   formFiles: any;
@@ -16,7 +16,7 @@ export function ListingFileUpload({ formFiles, getRootProps, getInputProps, hidd
       <div className="col-span-full">
         <label
           htmlFor="cover-photo"
-          className="block text-sm font-medium leading-6 text-neutral-900 dark:text-background"
+          className="dark:text-background block text-sm font-medium leading-6 text-neutral-900"
         >
           Photos and video <span className="font-light">&nbsp;(You can upload up to 9 images and 1 video).</span>
         </label>

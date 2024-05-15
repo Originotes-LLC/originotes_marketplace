@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable tailwindcss/no-custom-classname */
 const favorites = [
   {
     id: 1,
@@ -147,7 +148,7 @@ export default function FrontPage() {
             </div>
 
             <div className="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:grid-rows-2 sm:gap-x-6 lg:gap-8">
-              <div className="group aspect-h-1 aspect-w-2 overflow-hidden rounded-lg sm:aspect-h-1 sm:aspect-w-1 sm:row-span-2">
+              <div className="aspect-h-1 aspect-w-2 sm:aspect-h-1 sm:aspect-w-1 group overflow-hidden rounded-lg sm:row-span-2">
                 <img
                   src="https://tailwindui.com/img/ecommerce-images/home-page-03-featured-category.jpg"
                   alt="Two models wearing women's black cotton crewneck tee and off-white cotton crewneck tee."
@@ -171,7 +172,7 @@ export default function FrontPage() {
                   </div>
                 </div>
               </div>
-              <div className="group aspect-h-1 aspect-w-2 overflow-hidden rounded-lg sm:aspect-none sm:relative sm:h-full">
+              <div className="aspect-h-1 aspect-w-2 sm:aspect-none group overflow-hidden rounded-lg sm:relative sm:h-full">
                 <img
                   src="https://tailwindui.com/img/ecommerce-images/home-page-03-category-01.jpg"
                   alt="Wooden shelf with gray and olive drab green baseball caps, next to wooden clothes hanger with sweaters."
@@ -195,7 +196,7 @@ export default function FrontPage() {
                   </div>
                 </div>
               </div>
-              <div className="group aspect-h-1 aspect-w-2 overflow-hidden rounded-lg sm:aspect-none sm:relative sm:h-full">
+              <div className="aspect-h-1 aspect-w-2 sm:aspect-none group overflow-hidden rounded-lg sm:relative sm:h-full">
                 <img
                   src="https://tailwindui.com/img/ecommerce-images/home-page-03-category-02.jpg"
                   alt="Walnut desk organizer set with white modular trays, next to porcelain mug on wooden desk."
@@ -292,7 +293,7 @@ export default function FrontPage() {
             <div className="mt-6 grid grid-cols-1 gap-y-10 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-0 lg:gap-x-8">
               {favorites.map((favorite) => (
                 <div key={favorite.id} className="group relative">
-                  <div className="h-96 w-full overflow-hidden rounded-lg sm:aspect-h-3 sm:aspect-w-2 group-hover:opacity-75 sm:h-auto">
+                  <div className="sm:aspect-h-3 sm:aspect-w-2 h-96 w-full overflow-hidden rounded-lg group-hover:opacity-75 sm:h-auto">
                     <img
                       src={favorite.imageSrc}
                       alt={favorite.imageAlt}
