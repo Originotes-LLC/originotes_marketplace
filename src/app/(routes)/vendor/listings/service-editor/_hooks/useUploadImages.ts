@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 import { reduceErrorCodes } from "@/utils/reduce-error-codes";
-import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
+import { toast } from "sonner";
 
 type EnhancedFile = File & { preview: string };
 
@@ -28,7 +28,6 @@ TODO: Once we will decide on how to store videos, we will implement video upload
 */
 export const useUploadImages = () => {
   const [files, setFiles] = useState<EnhancedFile[]>([]);
-  const [formFiles, setFormFiles] = useState<File[]>([]);
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
     maxFiles: 10 - files.length,
     maxSize: 100000000,
@@ -39,7 +38,6 @@ export const useUploadImages = () => {
       "image/gif": [".gif"],
     },
     onDrop: (acceptedFiles) => {
-      setFormFiles([...formFiles, ...acceptedFiles]);
       setFiles([
         ...files,
         ...acceptedFiles.map((file) =>
@@ -62,5 +60,5 @@ export const useUploadImages = () => {
     }
   }, [fileRejections]);
 
-  return { formFiles, files, getRootProps, getInputProps, fileRejections };
+  return { files, getRootProps, getInputProps, fileRejections };
 };

@@ -1,11 +1,10 @@
-import { toast } from "sonner";
-import { useDropzone } from "react-dropzone";
 import { useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { toast } from "sonner";
 
 //
 export const useUploadVideoOnly = () => {
   const [selectedVideo, setSelectedVideo] = useState<File[] | []>([]);
-  console.log("selectedVideo: ", selectedVideo);
 
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
     maxFiles: 1,

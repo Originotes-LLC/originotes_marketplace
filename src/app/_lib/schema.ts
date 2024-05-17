@@ -9,45 +9,55 @@ export const ServiceListingSchema = z.object({
     .string()
     .min(10, "Service description must be at least 10 characters")
     .max(500, "Service description must be at most 500 characters"),
-  service_category: z.string({
-    required_error:
-      "Service category is required. Please select a category for your service",
-  }),
-  service_price: z.string({
-    required_error:
-      "Service price is required. Please enter a valid price for your service",
-  }),
-  service_files: z.any().transform((str, ctx) => {
-    try {
-      const parsedFiles: File[] = JSON.parse(str);
-      // we need to account for server side where Window is not defined so we cannot validate instanceof File because it doesn't exist on the server
+  service_category: z
+    .string({
+      required_error:
+        "Service category is required. Please select a category for your service",
+    })
+    .transform((val, ctx) => {
+      if (val === "Select a category" || val.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Please select a valid category for your service",
+        });
+        return z.NEVER;
+      }
+      return val;
+    }),
+  service_image_file: z.any(),
+  service_price: z
+    .string({
+      required_error: "Price is required. Please enter a valid price.",
+    })
+    .transform((val, ctx) => {
+      const isAValidNumber = /^\d+$/.test(val);
 
-      if (typeof window === "undefined") {
-        //  validate Files server side
-        return parsedFiles.every(
-          (file) =>
-            Object.prototype.hasOwnProperty.call(file, "preview") &&
-            Object.prototype.hasOwnProperty.call(file, "path")
-        );
-      } else {
-        // validate Files client side
-        return parsedFiles.every((file) => file instanceof File);
-      }
-    } catch (e) {
-      console.log("Error parsing files: ", e);
-      if (e instanceof Error) {
+      if (!isAValidNumber) {
         ctx.addIssue({
-          code: "custom",
-          message: e.message,
-        });
-        return z.NEVER;
-      } else {
-        ctx.addIssue({
-          code: "custom",
-          message: `Error parsing files: ${JSON.stringify(e)}`,
+          code: z.ZodIssueCode.custom,
+          message: "Please enter a valid number.",
         });
         return z.NEVER;
       }
-    }
-  }),
+      const num = parseFloat(val);
+      // check if the number is a positive number
+      if (num < 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Price must be a positive number",
+        });
+        return z.NEVER;
+      }
+
+      // check if the number is bigger than the max javascript number
+      if (num > Number.MAX_SAFE_INTEGER) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Price is too large",
+        });
+        return z.NEVER;
+      }
+
+      return val;
+    }),
 });

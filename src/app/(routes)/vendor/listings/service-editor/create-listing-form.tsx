@@ -24,24 +24,25 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import React, { useRef } from "react";
 
 import { Button } from "@/components/ui/button";
-import { GridUploadInput } from "@/listings/service-editor/grid-upload-input";
-import { ImageVideoGrid } from "@/listings/service-editor/image-grid";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { ServiceListingSchema } from "@/lib/schema";
+import { useUploadImages } from "@/listings/service-editor/_hooks/useUploadImages";
+import { GridUploadInput } from "@/listings/service-editor/grid-upload-input";
+import { ImageVideoGrid } from "@/listings/service-editor/image-grid";
 import { ListingFileUpload } from "@/listings/service-editor/listing-file-upload";
 import { ListingFormFooter } from "@/listings/service-editor/listing_form_footer";
-import { ServiceListingSchema } from "@/lib/schema";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/utils/shadcdn_utils";
 import { submitNewService } from "@/vendor/actions";
-import { useForm } from "react-hook-form";
-import { useFormState } from "react-dom";
-import { useRef } from "react";
-import { useUploadImages } from "@/listings/service-editor/_hooks/useUploadImages";
-import { z } from "zod";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useFormState } from "react-dom";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 /*
 
@@ -83,7 +84,7 @@ export const CreateListingForm = ({
   categories: Category[];
 }) => {
   const [state, formAction] = useFormState(submitNewService, initialState);
-  const { files, formFiles, getRootProps, getInputProps } = useUploadImages();
+
   const form = useForm<z.infer<typeof ServiceListingSchema>>({
     mode: "onChange",
     resolver: zodResolver(ServiceListingSchema),
@@ -95,22 +96,31 @@ export const CreateListingForm = ({
     },
   });
 
+  const { files, getRootProps, getInputProps } = useUploadImages();
+
+  const handleFormData = (ref: React.RefObject<HTMLFormElement>) => {
+    const newFormData = new FormData(ref.current!);
+    files.length > 0 && files.forEach((file) => {
+      newFormData.append("service_image_file", file);
+    });
+    return newFormData;
+  };
 
   const formRef = useRef<HTMLFormElement>(null);
-  // const { errors } = form.formState;
-  const hiddenFormFiles = form.register("service_files");
+  const { errors } = form.formState;
+
   return (
     <Form {...form}>
       <div className="text-xl font-semibold text-red-500">
-        {JSON.stringify(state?.issues, null, 2)}
+        {/* {JSON.stringify(state?.issues, null, 2)} */}
       </div>
       <form
         ref={formRef}
         action={formAction}
         onSubmit={(evt) => {
           evt.preventDefault();
-          form.handleSubmit(() => {
-            formAction(new FormData(formRef.current!));
+          form.handleSubmit((formData) => {
+            return formAction(handleFormData(formRef));
           })(evt);
         }}
         className="relative space-y-10 divide-y divide-neutral-900/10"
@@ -144,14 +154,23 @@ export const CreateListingForm = ({
                         </Label>
                         <FormControl>
                           <Input
-                            className="dark:text-background"
-                            type="text"
                             id="service_name"
+                            className={
+                              errors.service_name
+                                ? "dark:text-foreground bg-red-100 ring-2 ring-red-500 ring-offset-2"
+                                : "dark:text-background"
+                            }
+                            type="text"
                             placeholder="e.g. proposal, magic elopement, date-night-in-i-box"
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <div className="flex items-center space-x-2">
+                          {errors.service_name && (
+                            <ExclamationCircleIcon className="size-7 text-red-500" />
+                          )}
+                          <FormMessage className="text-sm" />
+                        </div>
                         <FormDescription className="dark:text-neutral-200">
                           This is the name of your service. Make it catchy and
                           descriptive.
@@ -175,12 +194,22 @@ export const CreateListingForm = ({
                         </Label>
                         <FormControl>
                           <Textarea
-                            className="dark:text-background"
+                            id="service_description"
+                            className={
+                              errors.service_description
+                                ? "dark:text-foreground bg-red-100 ring-2 ring-red-500 ring-offset-2"
+                                : "dark:text-background"
+                            }
                             placeholder="Describe your service in detail."
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <div className="flex items-center space-x-2">
+                          {errors.service_description && (
+                            <ExclamationCircleIcon className="size-7 text-red-500" />
+                          )}
+                          <FormMessage className="text-sm" />
+                        </div>
                         <FormDescription className="dark:text-neutral-200">
                           Elaborate what your service will provide if users were
                           to purchase it. Buyers will only see the first few
@@ -191,16 +220,23 @@ export const CreateListingForm = ({
                   />
                 </div>
                 {/* Service FILE Upload Section */}
-                <div className="col-span-full">
+                <div id="service_files" className="col-span-full">
                   {files && files.length > 0 ? (
-                    <ImageVideoGrid files={files} uploadBtn={<GridUploadInput getRootProps={getRootProps}
-                      getInputProps={getInputProps} />} />
+                    <ImageVideoGrid
+                      files={files}
+                      uploadBtn={
+                        <GridUploadInput
+                          getRootProps={getRootProps}
+                          getInputProps={getInputProps}
+                        />
+                      }
+                    />
                   ) : (
                     <ListingFileUpload
-                      formFiles={formFiles}
+                      serverErrors={state?.issues}
+                      form={form}
                       getRootProps={getRootProps}
                       getInputProps={getInputProps}
-                      hiddenFormFiles={hiddenFormFiles}
                     />
                   )}
                 </div>
@@ -221,11 +257,14 @@ export const CreateListingForm = ({
                               variant="outline"
                               role="combobox"
                               className={cn(
-                                "w-[300px] md:w-[600px] justify-between dark:bg-transparent dark:text-white",
+                                errors.service_category
+                                  ? "w-[300px] md:w-[600px] justify-between dark:bg-transparent dark:text-white bg-red-100 ring-2 ring-red-500"
+                                  : "w-[300px] md:w-[600px] justify-between dark:bg-transparent dark:text-white",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
                               <input
+                                id="service_category"
                                 type="hidden"
                                 {...field}
                                 name="service_category"
@@ -234,7 +273,7 @@ export const CreateListingForm = ({
                                 ? categories.find(
                                   (category) => category.name === field.value
                                 )?.name
-                                : "Select category"}
+                                : "Select a category"}
                               <CaretSortIcon className="ml-2 size-4 shrink-0 opacity-50" />
                             </Button>
                           </FormControl>
@@ -257,6 +296,7 @@ export const CreateListingForm = ({
                                         "service_category",
                                         category.name
                                       );
+                                      form.trigger("service_category");
                                     }}
                                   >
                                     {category.name}
@@ -275,7 +315,12 @@ export const CreateListingForm = ({
                           </Command>
                         </PopoverContent>
                       </Popover>
-                      <FormMessage />
+                      <div className="flex items-center space-x-2">
+                        {errors.service_category && (
+                          <ExclamationCircleIcon className="size-7 text-red-500" />
+                        )}
+                        <FormMessage className="text-sm" />
+                      </div>
                       <FormDescription className="dark:text-neutral-200">
                         This is the category that users will use to find your
                         services.
@@ -310,26 +355,38 @@ export const CreateListingForm = ({
                       <FormLabel className="dark:text-background">
                         Price
                       </FormLabel>
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                        <span className="text-neutral-500 sm:text-sm">$</span>
+                      <div className="relative">
+                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                          <span className="text-neutral-500 sm:text-sm">$</span>
+                        </div>
+                        <FormControl>
+                          <Input
+                            id="service_price"
+                            type="string"
+                            className={
+                              errors.service_price
+                                ? "dark:text-foreground bg-red-100 pl-7 pr-12 ring-2 ring-red-500 ring-offset-2"
+                                : "dark:text-background pl-7 pr-12"
+                            }
+                            placeholder="15023"
+                            {...field}
+                          />
+                        </FormControl>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                          <span
+                            className="dark:text-background text-neutral-500 sm:text-sm"
+                            id="price-currency"
+                          >
+                            USD
+                          </span>
+                        </div>
                       </div>
-                      <FormControl>
-                        <Input
-                          type="string"
-                          className="dark:text-background pl-7 pr-12"
-                          placeholder="15023"
-                          {...field}
-                        />
-                      </FormControl>
-                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                        <span
-                          className="dark:text-background text-neutral-500 sm:text-sm"
-                          id="price-currency"
-                        >
-                          USD
-                        </span>
+                      <div className="flex items-center space-x-2">
+                        {errors.service_price && (
+                          <ExclamationCircleIcon className="size-7 text-red-500" />
+                        )}
+                        <FormMessage className="text-sm" />
                       </div>
-                      <FormMessage />
                       <FormDescription className="dark:text-background">
                         Set the price for your service. This will be the
                         standard price that buyers will see.
@@ -342,7 +399,10 @@ export const CreateListingForm = ({
           </div>
         </div>
         <div className="fixed inset-x-0 bottom-0">
-          <ListingFormFooter />
+          <ListingFormFooter
+            clientErrors={errors}
+            serverErrors={state?.issues}
+          />
         </div>
       </form>
     </Form>
