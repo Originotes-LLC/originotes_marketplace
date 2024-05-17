@@ -1,14 +1,81 @@
+/* eslint-disable tailwindcss/no-custom-classname */
 "use client";
 
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
+import type { FieldErrors } from "react-hook-form";
 
-export const ListingFormFooter = () => {
+export const ListingFormFooter = ({
+  clientErrors,
+  serverErrors,
+}: {
+  clientErrors: FieldErrors<{
+    service_name: string;
+    service_description: string;
+    service_category: string;
+    service_price: string;
+  }>;
+  serverErrors: {
+    [key: string]: string;
+  };
+}) => {
+  // console.log(`clientErrors:`, JSON.stringify(clientErrors, null, 2));
+  // console.log(`serverErrors:`, JSON.stringify(serverErrors, null, 2));
+  const fieldWithError = (error: string) => {
+    switch (error) {
+      case "service_name":
+        return "Name";
+      case "service_description":
+        return "Description";
+      case "service_category":
+        return "Category";
+      case "service_price":
+        return "Price";
+      case "service_image_file":
+        return "Photos";
+      default:
+        return "Unknown field";
+    }
+  };
 
   const { pending } = useFormStatus();
   return (
     <footer className="bg-neutral-100 dark:bg-neutral-800">
       <div className="overflow-hidden p-8 lg:pl-72">
+        <div className="mb-6 flex flex-col items-center md:ml-12 md:block">
+          {(Object.keys(serverErrors).length > 0 ||
+            Object.keys(clientErrors).length > 0) && (
+              <p className="text-center text-base font-medium text-red-500 md:text-left">
+                Fix the errors highlighted to save your changes:
+              </p>
+            )}
+          <div className="flex flex-wrap space-x-2">
+            {Object.keys(clientErrors).length > 0 && (
+              <ul className="mt-2 flex space-x-4">
+                {Object.keys(clientErrors).map((error) => (
+                  <li
+                    key={error}
+                    className="text-foreground text-center text-base underline dark:text-white"
+                  >
+                    <Link href={`#${error}`}>{fieldWithError(error)}</Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {Object.keys(serverErrors).length > 0 && (
+              <ul className="mt-2 flex space-x-4">
+                {Object.keys(serverErrors).map((error) => (
+                  <li
+                    key={error}
+                    className="text-foreground text-center text-base underline dark:text-white"
+                  >
+                    <Link href={`#${error}`}>{fieldWithError(error)}</Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
         <div className="flex flex-col space-y-6 md:flex-row md:justify-end md:space-x-6 md:space-y-0">
           <Link
             href="/vendor/listings?page=1"
@@ -49,7 +116,6 @@ export const ListingFormFooter = () => {
             Publish
           </button>
         </div>
-
       </div>
     </footer>
   );

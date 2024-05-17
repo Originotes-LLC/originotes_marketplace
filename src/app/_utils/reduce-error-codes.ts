@@ -19,7 +19,7 @@ export const reduceErrorCodes = (arr: FileRejection[]) => {
       case "file-too-small":
         return "One or more of your files are too small. Please upload a larger file";
       case "too-many-files":
-        return "You are trying to upload too many files. Please upload up to 10 images.";
+        return "You are trying to upload too many files. Please select up to 10 photos.";
       default:
         return `Something went wrong: ${code}`; // Handle unexpected codes gracefully
     }

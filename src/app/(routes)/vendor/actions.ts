@@ -3,8 +3,23 @@
 import { ServiceListingSchema } from "@/lib/schema";
 
 export const submitNewService = async (prevState: any, formData: FormData) => {
+  const files = formData.getAll("service_image_file");
+  // console.log("files received server side: ", files);
+  const areAllFilesValid = files.every(
+    (file) => file instanceof File && file.name !== undefined && file.size > 0
+  );
+  if (!areAllFilesValid) {
+    return {
+      message: "Invalid file type",
+      issues: {
+        service_image_file:
+          "Please select at least one photo. You can select up to 10 photos.",
+      },
+    };
+  }
   const data = Object.fromEntries(formData);
-  console.log("data received on server side: ", data);
+  // console.log("data received on server side: ", data);
+
   const parsed = await ServiceListingSchema.safeParseAsync(data);
   if (!parsed.success) {
     return {
@@ -13,15 +28,9 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
     };
   }
 
-  // here we still need to validate the files as valid File objects
-
+  // save the data in Swell
   return {
-    message: "Success",
+    message: "Success from server action. You can save the data now.",
     issues: {},
   };
 };
-
-// write a function to simulate 3 seconds of wait time to test submission buttons
-// const wait = (ms: number) =>
-//   new Promise((resolve) => setTimeout(resolve, ms));
-// await wait(3000);
