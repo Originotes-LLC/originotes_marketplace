@@ -1,10 +1,53 @@
+export interface SwellFile {
+  length?: number;
+  chunkSize?: number;
+  uploadDate?: string;
+  filename: string;
+  content_type: string;
+  date_created: string;
+  date_uploaded: string;
+  md5: string;
+  url: string;
+  id: string;
+  width?: number;
+  height?: number;
+}
+
+export interface UploadedFile {
+  length: number;
+  chunkSize: number;
+  uploadDate: string;
+  filename: string;
+  content_type: string;
+  date_created: string;
+  date_uploaded: string;
+  md5: string;
+  url: string;
+  id: string;
+}
+
+export interface Category {
+  name: string;
+  active: boolean;
+  sorting: null;
+  images: null;
+  description: string;
+  meta_title: null;
+  meta_description: null;
+  parent_id: null;
+  slug: string;
+  top_id: null;
+  date_created: string;
+  id: string;
+}
+
 export interface SwellError {
   errors: {
     name: {
       code: string;
       message: string;
     };
-    email: {
+    [key: string]: {
       code: string;
       message: string;
     };
@@ -131,21 +174,11 @@ export interface Vendor {
   id: string;
 }
 
-interface File {
-  id: string;
-  date_uploaded: string;
-  length: number;
-  md5: string;
-  filename: string;
-  content_type: string;
-  url: string;
-  width: number;
-  height: number;
-}
+export type EnhancedFile = File & { preview: string };
 
-interface Image {
-  file: File;
-  id: string;
+export interface SwellProductImage {
+  id?: string;
+  file: SwellFile;
 }
 
 interface Standard {
@@ -183,37 +216,35 @@ interface ProductCategories {
 
 export interface Product {
   name: string;
-  sku: null | string;
+  sku?: null | string;
   type: string;
   active: boolean;
-  images: Image[];
-  purchase_options: PurchaseOptions;
-  variable: boolean;
+  images: SwellProductImage[];
+  purchase_options?: PurchaseOptions;
+  variable?: boolean;
   description: string;
-  tags: string[];
-  meta_title: null | string;
-  meta_description: null | string;
-  slug: string;
-  attributes: Record<string, unknown>;
-  delivery: null | string;
-  virtual: boolean;
-  bundle: null | string;
+  tags?: string[];
+  meta_title?: null | string;
+  meta_description?: null | string;
+  slug?: string;
+  attributes?: Record<string, unknown>;
+  delivery?: null | string;
+  virtual?: boolean;
+  bundle?: null | string;
   price: number;
-  stock_tracking: boolean;
-  options: string[];
-  content: {
-    vendor_id: string;
-  };
-  currency: string;
-  sale: boolean;
-  sale_price: null | number;
-  prices: number[];
-  date_created: string;
-  stock_status: null | string;
-  date_updated: string;
-  category_index: ProductCategoryIndex;
-  id: string;
-  categories: ProductCategories;
+  stock_tracking?: boolean;
+  options?: string[];
+  vendor_id: string;
+  currency?: string;
+  sale?: boolean;
+  sale_price?: null | number;
+  prices?: number[];
+  date_created?: string;
+  stock_status?: null | string;
+  date_updated?: string;
+  category_index?: ProductCategoryIndex;
+  id?: string;
+  categories?: ProductCategories;
 }
 
 interface Page {

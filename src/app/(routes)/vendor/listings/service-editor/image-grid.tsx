@@ -1,14 +1,9 @@
 import React, { useEffect } from "react";
 
 /* eslint-disable tailwindcss/no-custom-classname */
+import type { EnhancedFile } from "@/types/index";
 import Image from "next/image";
 import { RiImageAddFill } from "react-icons/ri";
-
-// import { PhotoIcon } from "@heroicons/react/24/solid";
-
-// import { PlusCircleIcon } from "@heroicons/react/24/outline";
-
-type EnhancedFile = File & { preview: string };
 
 export const ImageVideoGrid = ({
   files,
@@ -17,20 +12,13 @@ export const ImageVideoGrid = ({
   files: EnhancedFile[];
   uploadBtn: React.JSX.Element;
 }) => {
-  // TODO: Once we decide on how to store videos, we can use this hook and add videos to the products
-  // const videoFile = files.find((file) => file.type.includes("video"));
-  // console.log('videoFile: ', videoFile);
   const [image1, ...rest] = files.filter((file) => file.type.includes("image"));
   const uploadBtnArray = Array.from(
     { length: 9 - rest.length },
     () => uploadBtn
   );
-  // TODO: Once we decide on how to store videos, we can use this hook and add videos to the products
-  // const { getRootProps, getInputProps, selectedVideo, fileRejections } = useUploadVideoOnly()
 
 
-
-  // 
   useEffect(() => {
     // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
     return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
@@ -59,42 +47,6 @@ export const ImageVideoGrid = ({
             </div>
           </li>
         )}
-        {/* {files.length > 0 && !videoFile ? (
-          <li className="w-full">
-            <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg border border-dashed border-neutral-300">
-              <div className="flex size-full items-center justify-center">
-                <div className="relative inline-block">
-                  <VideoCameraIcon className="size-12 text-neutral-300" />
-                  <PlusCircleIcon className="absolute left-0 -ml-2 -mt-5 size-5 text-neutral-400" />
-                </div>
-              </div>
-              <div className="size-full" {...getRootProps()}>
-                <input
-                  {...getInputProps()}
-                  id="video_file_input"
-                  name="video_file_input"
-                  type="file"
-                  className="sr-only"
-                />
-              </div>
-            </div>
-          </li>
-        ) : (
-          videoFile && (
-            <li className="w-full">
-              <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg border border-neutral-300">
-                <video
-                  aria-label="Video player"
-                  className="size-full object-cover"
-                  controls
-                >
-                  <source src={videoFile.preview} />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            </li>
-          )
-        )} */}
       </ul>
       <ul role="list" className="grid grid-cols-3 gap-2">
         {rest.length > 0 &&

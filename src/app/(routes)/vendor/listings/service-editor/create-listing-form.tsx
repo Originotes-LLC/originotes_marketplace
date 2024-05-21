@@ -1,7 +1,6 @@
 "use client";
 
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-/* eslint-disable tailwindcss/no-custom-classname */
 import {
   Command,
   CommandEmpty,
@@ -26,23 +25,25 @@ import {
 } from "@/components/ui/popover";
 import React, { useRef } from "react";
 
+/* eslint-disable tailwindcss/no-custom-classname */
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { ServiceListingSchema } from "@/lib/schema";
-import { useUploadImages } from "@/listings/service-editor/_hooks/useUploadImages";
+import type { Category } from "@/types/index";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { GridUploadInput } from "@/listings/service-editor/grid-upload-input";
 import { ImageVideoGrid } from "@/listings/service-editor/image-grid";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ListingFileUpload } from "@/listings/service-editor/listing-file-upload";
 import { ListingFormFooter } from "@/listings/service-editor/listing_form_footer";
+import { ServiceListingSchema } from "@/lib/schema";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/utils/shadcdn_utils";
 import { submitNewService } from "@/vendor/actions";
-import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
+import { useFormState } from "react-dom";
+import { useUploadImages } from "@/listings/service-editor/_hooks/useUploadImages";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 /*
 
@@ -58,22 +59,9 @@ Fields needed to create a service
 - Service Description (content)
 */
 
-interface Category {
-  name: string;
-  active: boolean;
-  sorting: null;
-  images: null;
-  description: string;
-  meta_title: null;
-  meta_description: null;
-  parent_id: null;
-  slug: string;
-  top_id: null;
-  date_created: string;
-  id: string;
-}
-
 const initialState = {
+  status: 200,
+  code: "init",
   message: "",
   issues: {},
 };
@@ -84,6 +72,8 @@ export const CreateListingForm = ({
   categories: Category[];
 }) => {
   const [state, formAction] = useFormState(submitNewService, initialState);
+  state?.code === "draft-saved" && console.log("Draft saved");
+  console.log('state: ', state);
 
   const form = useForm<z.infer<typeof ServiceListingSchema>>({
     mode: "onChange",
@@ -96,24 +86,22 @@ export const CreateListingForm = ({
     },
   });
 
-  const { files, getRootProps, getInputProps } = useUploadImages();
+  const { files, getRootProps, getInputProps, uploadedFiles, swellErrors } =
+    useUploadImages(form);
+  console.log("swellErrors: ", swellErrors);
 
   const handleFormData = (ref: React.RefObject<HTMLFormElement>) => {
-    const newFormData = new FormData(ref.current!);
-    files.length > 0 && files.forEach((file) => {
-      newFormData.append("service_image_file", file);
-    });
-    return newFormData;
+    const formData = new FormData(ref.current!);
+    formData.append("uploaded_service_files", JSON.stringify(uploadedFiles));
+    return formData;
   };
 
   const formRef = useRef<HTMLFormElement>(null);
   const { errors } = form.formState;
+  console.log("form validation Errors: ", errors);
 
   return (
     <Form {...form}>
-      <div className="text-xl font-semibold text-red-500">
-        {/* {JSON.stringify(state?.issues, null, 2)} */}
-      </div>
       <form
         ref={formRef}
         action={formAction}
@@ -221,6 +209,13 @@ export const CreateListingForm = ({
                 </div>
                 {/* Service FILE Upload Section */}
                 <div id="service_files" className="col-span-full">
+                  <input
+                    id="uploaded_service_files"
+                    type="hidden"
+                    {...form.register("uploaded_service_files")}
+                    readOnly
+                    value={JSON.stringify(uploadedFiles)}
+                  />
                   {files && files.length > 0 ? (
                     <ImageVideoGrid
                       files={files}
@@ -233,8 +228,8 @@ export const CreateListingForm = ({
                     />
                   ) : (
                     <ListingFileUpload
+                      clientErrors={errors}
                       serverErrors={state?.issues}
-                      form={form}
                       getRootProps={getRootProps}
                       getInputProps={getInputProps}
                     />

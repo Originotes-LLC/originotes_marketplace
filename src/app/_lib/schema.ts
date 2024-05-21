@@ -11,8 +11,7 @@ export const ServiceListingSchema = z.object({
     .max(500, "Service description must be at most 500 characters"),
   service_category: z
     .string({
-      required_error:
-        "Service category is required. Please select a category for your service",
+      required_error: "Category is required. Please select a category.",
     })
     .transform((val, ctx) => {
       if (val === "Select a category" || val.length === 0) {
@@ -24,7 +23,31 @@ export const ServiceListingSchema = z.object({
       }
       return val;
     }),
-  service_image_file: z.any(),
+  uploaded_service_files: z.string().transform((val, ctx) => {
+    if (!val.length) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Please upload at least one photo",
+      });
+      return z.NEVER;
+    }
+
+    /*
+     z.object({
+        length: z.number(),
+        chunkSize: z.number(),
+        uploadDate: z.string(),
+        filename: z.string(),
+        content_type: z.string(),
+        date_created: z.string(),
+        date_uploaded: z.string(),
+        md5: z.string(),
+        url: z.string(),
+        id: z.string(),
+      })
+     */
+    return val;
+  }),
   service_price: z
     .string({
       required_error: "Price is required. Please enter a valid price.",

@@ -14,9 +14,7 @@ export const getProductsByPage = async (
   try {
     const products = await swell.get("/products", {
       where: {
-        content: {
-          vendor_id: id,
-        },
+        vendor_id: id,
       },
       // TODO: Make sure you increase the limit to like 10 or 20 later per page
       limit: 6,

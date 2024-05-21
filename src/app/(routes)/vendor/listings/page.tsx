@@ -1,10 +1,10 @@
-import { getServicesByVendorId } from "@/lib/services";
 import { EmptyListings } from "@/listings/empty_listings";
 import { ListingHeader } from "@/routes/vendor/listings/listing_header";
 import { ListingPagination } from "@/routes/vendor/listings/listing_pagination";
 import { ListingsGrid } from "@/routes/vendor/listings/listings_grid";
-import { currentUser } from "@clerk/nextjs/server";
 import { Suspense } from "react";
+import { currentUser } from "@clerk/nextjs/server";
+import { getServicesByVendorId } from "@/lib/services";
 
 export default async function VendorListings({
   searchParams,
@@ -16,6 +16,7 @@ export default async function VendorListings({
   const page = searchParams.page ? parseInt(searchParams.page as string) : 1;
   const user = await currentUser();
   const services = await getServicesByVendorId(user?.id, page);
+  console.log('services: ', JSON.stringify(services, null, 2));
 
   if ("message" in services) {
     throw new Error(services.message);
