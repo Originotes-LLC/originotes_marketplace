@@ -82,7 +82,7 @@ export async function POST(req: Request) {
 
         if ("errors" in newSwellAccount) {
           throw new Error(
-            `Error creating user in Swell: ${newSwellAccount.errors.email.message}`
+            `Error creating user in Swell: ${newSwellAccount?.errors?.email?.message}`
           );
         } else {
           return new Response("User created successfully!", {
@@ -107,7 +107,7 @@ export async function POST(req: Request) {
         );
         if ("errors" in updatedSwellAccount) {
           throw new Error(
-            `Error updating user in Swell: ${updatedSwellAccount.errors.email.message}`
+            `Error updating user in Swell: ${updatedSwellAccount?.errors?.email?.message}`
           );
         } else {
           return new Response("User updated successfully!", {
@@ -120,7 +120,7 @@ export async function POST(req: Request) {
         const deletedSwellAccount = await deleteSwellBuyer(clerkId);
         if ("errors" in deletedSwellAccount) {
           throw new Error(
-            `Error deleting user in Swell: ${deletedSwellAccount.errors.email.message}`
+            `Error deleting user in Swell: ${deletedSwellAccount?.errors?.email?.message}`
           );
         } else {
           return new Response("User deleted successfully!", {
