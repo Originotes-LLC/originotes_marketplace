@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import type { Metadata } from "next";
 import React from "react";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -33,6 +34,7 @@ export default function RootLayout({
             {children}
             <Toaster richColors />
             <Analytics />
+            <SpeedInsights />
           </ThemeProvider>
         </body>
       </html>
