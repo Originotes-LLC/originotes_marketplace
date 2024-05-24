@@ -57,7 +57,6 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
       type: "digital",
       active: true,
     });
-    console.log("serviceDraft created? : ", serviceDraft);
 
     if ("errors" in serviceDraft) {
       return {
@@ -87,6 +86,29 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
 
 export const saveAcceptedFiles = async (formData: FormData) => {
   const files = formData.getAll("service_image_file") as File[];
+
+  if (files.length === 0) {
+    return {
+      status: 400,
+      code: "no-files",
+      message: "No files to upload",
+      issues: {
+        service_image_file: "Please select at least one photo.",
+      },
+    };
+  }
+
+  if (files.length > 10) {
+    return {
+      status: 400,
+      code: "too-many-files",
+      message: "Too many files",
+      issues: {
+        service_image_file: "You can select up to 10 photos.",
+      },
+    };
+  }
+
   for (const file of files) {
     if (!(file instanceof File)) {
       return {
@@ -101,7 +123,7 @@ export const saveAcceptedFiles = async (formData: FormData) => {
     }
   }
 
-  const uploadedFiles: SwellFile[] | SwellError = await uploadFiles(files);
-  console.log("uploadedFiles in Swell: ", uploadedFiles);
+  const uploadedFiles: (SwellFile | undefined | null)[] | SwellError =
+    await uploadFiles(files);
   return uploadedFiles;
 };

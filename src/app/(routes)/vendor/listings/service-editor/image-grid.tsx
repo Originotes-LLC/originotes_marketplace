@@ -1,80 +1,138 @@
-import React, { useEffect } from "react";
-
-/* eslint-disable tailwindcss/no-custom-classname */
-import type { EnhancedFile } from "@/types/index";
+import { GridUploadInput } from "./grid-upload-input";
 import Image from "next/image";
+import React from "react";
 import { RiImageAddFill } from "react-icons/ri";
-
-export const ImageVideoGrid = ({
+/* eslint-disable tailwindcss/no-custom-classname */
+import type { SwellFile } from "@/types/index";
+export const ImageGrid = ({
+  refFileInput,
+  isUploading,
   files,
   uploadBtn,
 }: {
-  files: EnhancedFile[];
-  uploadBtn: React.JSX.Element;
+  refFileInput: React.RefObject<HTMLInputElement>;
+  isUploading: boolean;
+  // this are the uploaded files
+  files: (SwellFile | File | null)[];
+  uploadBtn: {
+    rootProps: any;
+    inputProps: any;
+  };
 }) => {
-  const [image1, ...rest] = files.filter((file) => file.type.includes("image"));
-  const uploadBtnArray = Array.from(
-    { length: 9 - rest.length },
-    () => uploadBtn
-  );
+  const [firstImage, ...rest] = files;
 
-
-  useEffect(() => {
-    // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
-    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-
-
-
-  // 
   return (
     <div className="grid gap-2 md:grid-cols-2 md:gap-y-0">
       <ul className="flex space-x-2 md:flex-col md:space-x-0">
-        {image1 && (
-          <li className="w-full">
-            <div className="aspect-h-7 aspect-w-10 group relative block w-full overflow-hidden rounded-lg border border-neutral-300">
+        {isUploading && firstImage instanceof File ? (
+          <li className="size-full">
+            <div className="aspect-h-7 aspect-w-10 group relative block size-full overflow-hidden rounded-lg border border-neutral-300 dark:bg-neutral-900">
+              <div className="flex size-full items-center justify-center">
+                <svg
+                  className="-ml-1 mr-3 size-5 animate-spin text-black dark:text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </li>
+        ) : firstImage &&
+          typeof firstImage === "object" &&
+          "url" in firstImage ? (
+          <li className="size-full">
+            <div className="aspect-h-7 aspect-w-10 group relative block size-full overflow-hidden rounded-lg border border-neutral-300">
               <Image
-                fill
-                onLoad={() => {
-                  URL.revokeObjectURL(image1?.preview as string);
-                }}
-                src={image1?.preview as string}
+                width={firstImage?.width}
+                height={firstImage?.height}
+                src={firstImage?.url}
                 alt=""
                 className="pointer-events-none object-cover group-hover:opacity-75"
               />
             </div>
           </li>
-        )}
+        ) : null}
       </ul>
       <ul role="list" className="grid grid-cols-3 gap-2">
         {rest.length > 0 &&
-          rest.map((file: EnhancedFile) => (
-            <li key={file.preview}>
-              <div className="aspect-h-7 aspect-w-10 group block size-full overflow-hidden rounded-lg border border-neutral-300">
-                <Image
-                  onLoad={() => {
-                    URL.revokeObjectURL(file.preview);
-                  }}
-                  fill
-                  src={file.preview}
-                  alt=""
-                  className="pointer-events-none object-cover group-hover:opacity-75"
-                />
-              </div>
-            </li>
-          ))}
-        {uploadBtnArray.map((btn, idx) => (
-          <li key={idx}>
-            <div className="aspect-h-7 aspect-w-10 group block size-full overflow-hidden rounded-lg border border-dashed border-neutral-300">
-              <div className="flex size-full items-center justify-center">
-                <RiImageAddFill className="size-8 text-neutral-300 dark:text-neutral-200" />
-              </div>
-              {btn}
-            </div>
-          </li>
-        ))}
+          rest.map((elem, idx) => {
+            if (!elem) {
+              return (
+                <li className="size-full" key={idx}>
+                  <div className="aspect-h-7 aspect-w-10 group block size-full overflow-hidden rounded-lg border border-dashed border-neutral-300">
+                    <div className="flex size-full items-center justify-center">
+                      <RiImageAddFill className="size-8 text-neutral-300 dark:text-neutral-200" />
+                    </div>
+
+                    <GridUploadInput
+                      refFileInput={refFileInput}
+                      getRootProps={uploadBtn.rootProps}
+                      getInputProps={uploadBtn.inputProps}
+                    />
+                  </div>
+                </li>
+              );
+            }
+
+            if (typeof elem === "object" && "url" in elem) {
+              return (
+                <li className="size-full" key={elem.id}>
+                  <div className="aspect-h-7 aspect-w-10 group block size-full overflow-hidden rounded-lg border border-neutral-300">
+                    <Image
+                      width={elem.width}
+                      height={elem.height}
+                      src={elem.url}
+                      alt=""
+                      className="pointer-events-none object-cover group-hover:opacity-75"
+                    />
+                  </div>
+                </li>
+              );
+            }
+
+            return (
+              <li className="size-full" key={idx}>
+                <div className="aspect-h-7 aspect-w-10 group relative block size-full overflow-hidden rounded-lg border border-neutral-300 dark:bg-neutral-900">
+                  <div className="flex size-full items-center justify-center">
+                    <svg
+                      className="-ml-1 mr-3 size-5 animate-spin text-black dark:text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
       </ul>
     </div>
   );

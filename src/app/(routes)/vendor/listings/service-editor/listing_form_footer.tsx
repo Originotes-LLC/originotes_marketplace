@@ -33,7 +33,6 @@ export const ListingFormFooter = ({
   };
 
   const { pending } = useFormStatus();
-  console.log(' is it pending: ', pending);
   return (
     <footer className="bg-neutral-100 dark:bg-neutral-800">
       <div className="overflow-hidden p-8 lg:pl-72">

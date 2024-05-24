@@ -29,8 +29,7 @@ import React, { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import type { Category } from "@/types/index";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import { GridUploadInput } from "@/listings/service-editor/grid-upload-input";
-import { ImageVideoGrid } from "@/listings/service-editor/image-grid";
+import { ImageGrid } from "@/listings/service-editor/image-grid";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ListingFileUpload } from "@/listings/service-editor/listing-file-upload";
@@ -48,7 +47,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 /*
 
 Fields needed to create a service
-
 - Service name
 - Type : Digital (hidden or set in the server action directly)
 - Category (selected from a list of categories)
@@ -73,7 +71,7 @@ export const CreateListingForm = ({
 }) => {
   const [state, formAction] = useFormState(submitNewService, initialState);
   state?.code === "draft-saved" && console.log("Draft saved");
-  console.log('state: ', state);
+
 
   const form = useForm<z.infer<typeof ServiceListingSchema>>({
     mode: "onChange",
@@ -86,9 +84,9 @@ export const CreateListingForm = ({
     },
   });
 
-  const { files, getRootProps, getInputProps, uploadedFiles, swellErrors } =
+  const { isUploading, getRootProps, getInputProps, uploadedFiles } =
     useUploadImages(form);
-  console.log("swellErrors: ", swellErrors);
+
 
   const handleFormData = (ref: React.RefObject<HTMLFormElement>) => {
     const formData = new FormData(ref.current!);
@@ -96,9 +94,10 @@ export const CreateListingForm = ({
     return formData;
   };
 
+  const fileInput = useRef<HTMLInputElement>(null);
+
   const formRef = useRef<HTMLFormElement>(null);
   const { errors } = form.formState;
-  console.log("form validation Errors: ", errors);
 
   return (
     <Form {...form}>
@@ -107,6 +106,7 @@ export const CreateListingForm = ({
         action={formAction}
         onSubmit={(evt) => {
           evt.preventDefault();
+          console.log(`fileInput?.current?.files: `, fileInput?.current?.files);
           form.handleSubmit((formData) => {
             return formAction(handleFormData(formRef));
           })(evt);
@@ -216,14 +216,16 @@ export const CreateListingForm = ({
                     readOnly
                     value={JSON.stringify(uploadedFiles)}
                   />
-                  {files && files.length > 0 ? (
-                    <ImageVideoGrid
-                      files={files}
+                  {uploadedFiles && uploadedFiles.length > 0 ? (
+                    <ImageGrid
+                      refFileInput={fileInput}
+                      isUploading={isUploading}
+                      files={uploadedFiles}
                       uploadBtn={
-                        <GridUploadInput
-                          getRootProps={getRootProps}
-                          getInputProps={getInputProps}
-                        />
+                        {
+                          rootProps: getRootProps,
+                          inputProps: getInputProps,
+                        }
                       }
                     />
                   ) : (
@@ -234,6 +236,7 @@ export const CreateListingForm = ({
                       getInputProps={getInputProps}
                     />
                   )}
+
                 </div>
 
                 {/* Service CATEGORIES Section */}
