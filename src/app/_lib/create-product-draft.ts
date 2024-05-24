@@ -12,6 +12,9 @@ export const createProductDraft = async (productData: Product) => {
     active: productData.active,
     type: productData.type,
     vendor_id: productData.vendor_id,
+    content: {
+      files: ["http://apple.com", "http://google.com", "http://microsoft.com"],
+    },
   });
 
   return res;

@@ -10,9 +10,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
-      { protocol: "https", hostname: "cdn.swell.store" },
+      {
+        protocol: "https",
+        hostname: "cdn.swell.store",
+      },
     ],
   },
 };
-
 export default nextConfig;
