@@ -93,9 +93,6 @@ export const CreateListingForm = ({
     formData.append("uploaded_service_files", JSON.stringify(uploadedFiles));
     return formData;
   };
-
-  const fileInput = useRef<HTMLInputElement>(null);
-
   const formRef = useRef<HTMLFormElement>(null);
   const { errors } = form.formState;
 
@@ -106,7 +103,6 @@ export const CreateListingForm = ({
         action={formAction}
         onSubmit={(evt) => {
           evt.preventDefault();
-          console.log(`fileInput?.current?.files: `, fileInput?.current?.files);
           form.handleSubmit((formData) => {
             return formAction(handleFormData(formRef));
           })(evt);
@@ -218,7 +214,6 @@ export const CreateListingForm = ({
                   />
                   {uploadedFiles && uploadedFiles.length > 0 ? (
                     <ImageGrid
-                      refFileInput={fileInput}
                       isUploading={isUploading}
                       files={uploadedFiles}
                       uploadBtn={

@@ -1,19 +1,16 @@
 import { GridUploadInput } from "./grid-upload-input";
 import Image from "next/image";
-import React from "react";
 import { RiImageAddFill } from "react-icons/ri";
+import type { S3File } from "@/types/index";
 /* eslint-disable tailwindcss/no-custom-classname */
-import type { SwellFile } from "@/types/index";
+
 export const ImageGrid = ({
-  refFileInput,
   isUploading,
   files,
   uploadBtn,
 }: {
-  refFileInput: React.RefObject<HTMLInputElement>;
   isUploading: boolean;
-  // this are the uploaded files
-  files: (SwellFile | File | null)[];
+  files: (S3File | File)[];
   uploadBtn: {
     rootProps: any;
     inputProps: any;
@@ -53,19 +50,23 @@ export const ImageGrid = ({
           </li>
         ) : firstImage &&
           typeof firstImage === "object" &&
-          "url" in firstImage ? (
+          "data" in firstImage && firstImage.status === 200 ? (
           <li className="size-full">
             <div className="aspect-h-7 aspect-w-10 group relative block size-full overflow-hidden rounded-lg border border-neutral-300">
               <Image
-                width={firstImage?.width}
-                height={firstImage?.height}
-                src={firstImage?.url}
+                width={firstImage.data.width}
+                height={firstImage.data.height}
+                src={firstImage.data.url!}
                 alt=""
                 className="pointer-events-none object-cover group-hover:opacity-75"
               />
             </div>
           </li>
-        ) : null}
+        ) : <li className="size-full">
+          <div className="aspect-h-7 aspect-w-10 group relative block size-full overflow-hidden rounded-lg border border-neutral-300">
+            <p className="text-red-500">Image failed to upload</p>
+          </div>
+        </li>}
       </ul>
       <ul role="list" className="grid grid-cols-3 gap-2">
         {rest.length > 0 &&
@@ -79,7 +80,7 @@ export const ImageGrid = ({
                     </div>
 
                     <GridUploadInput
-                      refFileInput={refFileInput}
+
                       getRootProps={uploadBtn.rootProps}
                       getInputProps={uploadBtn.inputProps}
                     />
@@ -88,14 +89,14 @@ export const ImageGrid = ({
               );
             }
 
-            if (typeof elem === "object" && "url" in elem) {
+            if (typeof elem === "object" && "data" in elem && elem.status === 200) {
               return (
-                <li className="size-full" key={elem.id}>
+                <li className="size-full" key={elem.data.url}>
                   <div className="aspect-h-7 aspect-w-10 group block size-full overflow-hidden rounded-lg border border-neutral-300">
                     <Image
-                      width={elem.width}
-                      height={elem.height}
-                      src={elem.url}
+                      width={elem.data.width}
+                      height={elem.data.height}
+                      src={elem.data.url!}
                       alt=""
                       className="pointer-events-none object-cover group-hover:opacity-75"
                     />

@@ -1,3 +1,9 @@
+export interface S3File {
+  status: number;
+  message: string;
+  data: { url: string | null; width: number; height: number };
+}
+
 export interface SwellFile {
   length?: number;
   chunkSize?: number;

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 
+import type { S3File } from "@/types/index";
 import { ServiceListingSchema } from "@/lib/schema";
 import type { UseFormReturn } from "react-hook-form";
 import { reduceErrorCodes } from "@/utils/reduce-error-codes";
 import { toast } from "sonner";
+import { uploadFilesToAmazonS3 } from "@/vendor/actions";
 import { useDropzone } from "react-dropzone";
 import { z } from "zod";
 
@@ -28,8 +30,8 @@ TODO: Once we will decide on how to store videos, we will implement video upload
 export const useUploadImages = (
   form: UseFormReturn<z.infer<typeof ServiceListingSchema>>
 ) => {
-  const [uploadedFiles, setUploadedFiles] = useState<(null | File)[]>([]);
-  console.log("uploadedFiles: ", uploadedFiles);
+  const [uploadedFiles, setUploadedFiles] = useState<(File | S3File)[]>([]);
+  // console.log("uploadedFiles: ", uploadedFiles);
 
   const [isUploading, setIsUploading] = useState(false);
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
@@ -45,6 +47,15 @@ export const useUploadImages = (
       if (acceptedFiles.length > 0) {
         setIsUploading(true);
         setUploadedFiles([...acceptedFiles]);
+
+        // upload files to S3
+        const formData = new FormData();
+        acceptedFiles.forEach((file) => {
+          formData.append("service_image_file", file);
+        });
+        const filesSavedInS3 = await uploadFilesToAmazonS3(formData);
+
+        setUploadedFiles(filesSavedInS3);
       }
       return null;
     },
