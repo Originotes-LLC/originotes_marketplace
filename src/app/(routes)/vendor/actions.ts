@@ -150,13 +150,16 @@ export async function uploadFilesToAmazonS3(
         .toBuffer();
       const metadata = await resizedImage.metadata();
 
-      // Use resized dimensions for metadata
+      // Use resized dimensions for metadata that can be saved in S3
       const width = metadata.width ?? 2000;
       const height =
         metadata.height ??
         Math.round((metadata?.height! * 2000) / metadata?.width!);
 
-      const bucket = process.env.AWS_DEV_BUCKET_NAME!;
+      const bucket =
+        process.env.NODE_ENV === "development"
+          ? process.env.AWS_DEV_BUCKET_NAME!
+          : process.env.AWS_PROD_BUCKET_NAME!;
       const key = `${uuidv4()}.jpeg`; // Use .jpeg extension for the processed file
       const uploadParams = {
         Bucket: bucket,
