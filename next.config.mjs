@@ -4,6 +4,14 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "originotesdev.s3.us-east-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "originotesprod.s3.us-east-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
         hostname: "tailwindui.com",
       },
       {

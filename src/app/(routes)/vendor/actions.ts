@@ -1,13 +1,15 @@
 "use server";
 
-import type { SwellError, SwellFile, SwellProductImage } from "@/types/index";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import type { S3File, SwellFile, SwellProductImage } from "@/types/index";
 
 import { ServiceListingSchema } from "@/lib/schema";
 import { auth } from "@clerk/nextjs/server";
 import { createProductDraft } from "@/lib/create-product-draft";
 import { getAccountByClerkId } from "@/lib/get-account-by-clerk-id";
 import { revalidatePath } from "next/cache";
-import { uploadFiles } from "@/lib/upload-file";
+import sharp from "sharp";
+import { v4 as uuidv4 } from "uuid";
 
 export const submitNewService = async (prevState: any, formData: FormData) => {
   const { userId } = auth();
@@ -84,46 +86,146 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
   };
 };
 
-export const saveAcceptedFiles = async (formData: FormData) => {
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // maximum file size  5MB in bytes
+const MAX_FILES = 10; // Max number of files to upload
+
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION!,
+  credentials: {
+    accessKeyId: process.env.NEXT_AWS_S3_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.NEXT_AWS_S3_SECRET_ACCESS_KEY!,
+  },
+});
+
+export async function uploadFilesToAmazonS3(
+  formData: FormData
+): Promise<S3File[]> {
   const files = formData.getAll("service_image_file") as File[];
 
   if (files.length === 0) {
-    return {
-      status: 400,
-      code: "no-files",
-      message: "No files to upload",
-      issues: {
+    return [
+      createFileErrorResponse(400, "No files to upload", {
         service_image_file: "Please select at least one photo.",
-      },
-    };
+      }),
+    ];
   }
 
-  if (files.length > 10) {
-    return {
-      status: 400,
-      code: "too-many-files",
-      message: "Too many files",
-      issues: {
-        service_image_file: "You can select up to 10 photos.",
-      },
-    };
+  if (files.length > MAX_FILES) {
+    return [
+      createFileErrorResponse(400, "Too many files", {
+        service_image_file: `You can select up to ${MAX_FILES} photos.`,
+      }),
+    ];
   }
 
-  for (const file of files) {
+  const uploadPromises = files.map(async (file) => {
     if (!(file instanceof File)) {
-      return {
-        status: 400,
-        code: "invalid-file-type",
-        message: "Invalid file type",
-        issues: {
-          service_image_file:
-            "Please select at least one photo. You can select up to 10 photos.",
+      return createFileErrorResponse(400, "Invalid file type", {
+        service_image_file: "Please select valid photos.",
+      });
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      return createFileErrorResponse(
+        400,
+        `File ${file.name} exceeds the maximum size of 5MB.`,
+        {
+          service_image_file: `File ${file.name} exceeds the maximum size of 5MB.`,
+        }
+      );
+    }
+
+    try {
+      // Convert the File to a Buffer
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      // Use Sharp to process the image and get the resized dimensions
+      const image = sharp(buffer);
+      const resizedImage = image.resize({
+        width: 2000,
+        withoutEnlargement: true,
+      });
+      const optimizedBuffer = await resizedImage
+        .jpeg({ quality: 80 }) // Convert to JPEG with 80% quality
+        .toBuffer();
+      const metadata = await resizedImage.metadata();
+
+      // Use resized dimensions for metadata
+      const width = metadata.width ?? 2000;
+      const height =
+        metadata.height ??
+        Math.round((metadata?.height! * 2000) / metadata?.width!);
+
+      const bucket = process.env.AWS_DEV_BUCKET_NAME!;
+      const key = `${uuidv4()}.jpeg`; // Use .jpeg extension for the processed file
+      const uploadParams = {
+        Bucket: bucket,
+        Key: key,
+        Body: optimizedBuffer,
+        ContentType: "image/jpeg",
+        Metadata: {
+          width: width.toString(),
+          height: height.toString(),
         },
       };
-    }
-  }
+      const response = await s3Client.send(new PutObjectCommand(uploadParams));
 
-  const uploadedFiles: (SwellFile | undefined | null)[] | SwellError =
-    await uploadFiles(files);
-  return uploadedFiles;
-};
+      if (response.$metadata.httpStatusCode === 200) {
+        return {
+          status: 200,
+          message: "File successfully uploaded",
+          data: {
+            url: `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`,
+            width,
+            height,
+          },
+        };
+      } else {
+        return createFileErrorResponse(
+          500,
+          `Failed to upload file ${file.name}`,
+          {
+            service_image_file: `Failed to upload file ${file.name}.`,
+          }
+        );
+      }
+    } catch (error) {
+      // console.error(`Failed to upload file ${file.name}:`, error);
+      return createFileErrorResponse(
+        500,
+        `Failed to upload file ${file.name}`,
+        {
+          service_image_file: `Failed to upload file ${file.name}.`,
+        }
+      );
+    }
+  });
+
+  try {
+    return await Promise.all(uploadPromises);
+  } catch (error) {
+    // console.error("Error during file upload process:", error);
+    return [
+      createFileErrorResponse(500, "Failed to upload files", {
+        service_image_file: "Failed to upload files.",
+      }),
+    ];
+  }
+}
+
+function createFileErrorResponse(
+  status: number,
+  message: string,
+  issues: { [key: string]: string }
+) {
+  return {
+    status,
+    message,
+    data: {
+      url: null,
+      width: 0,
+      height: 0,
+    },
+    issues,
+  };
+}
