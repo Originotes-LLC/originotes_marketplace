@@ -1,7 +1,9 @@
+import type { CustomSwellFile, S3File } from "@/types/index";
+
 import { GridUploadInput } from "./grid-upload-input";
 import Image from "next/image";
 import { RiImageAddFill } from "react-icons/ri";
-import type { S3File } from "@/types/index";
+
 /* eslint-disable tailwindcss/no-custom-classname */
 
 export const ImageGrid = ({
@@ -10,7 +12,7 @@ export const ImageGrid = ({
   uploadBtn,
 }: {
   isUploading: boolean;
-  files: (S3File | File)[];
+  files: (S3File | File | CustomSwellFile)[];
   uploadBtn: {
     rootProps: any;
     inputProps: any;
@@ -62,11 +64,23 @@ export const ImageGrid = ({
               />
             </div>
           </li>
-        ) : <li className="size-full">
+        ) : firstImage && "url" in firstImage ? (
+          <li className="size-full">
+            <div className="aspect-h-7 aspect-w-10 group relative block size-full overflow-hidden rounded-lg border border-neutral-300">
+              <Image
+                width={firstImage.width}
+                height={firstImage.height}
+                src={firstImage.url}
+                alt=""
+                className="pointer-events-none object-cover group-hover:opacity-75"
+              />
+            </div>
+          </li>
+        ) : (<li className="size-full">
           <div className="aspect-h-7 aspect-w-10 group relative block size-full overflow-hidden rounded-lg border border-neutral-300">
             <p className="text-red-500">Image failed to upload</p>
           </div>
-        </li>}
+        </li >)}
       </ul>
       <ul role="list" className="grid grid-cols-3 gap-2">
         {rest.length > 0 &&
@@ -97,6 +111,22 @@ export const ImageGrid = ({
                       width={elem.data.width}
                       height={elem.data.height}
                       src={elem.data.url!}
+                      alt=""
+                      className="pointer-events-none object-cover group-hover:opacity-75"
+                    />
+                  </div>
+                </li>
+              );
+            }
+
+            if ("url" in elem) {
+              return (
+                <li className="size-full" key={elem.id}>
+                  <div className="aspect-h-7 aspect-w-10 group block size-full overflow-hidden rounded-lg border border-neutral-300">
+                    <Image
+                      width={elem.width}
+                      height={elem.height}
+                      src={elem.url}
                       alt=""
                       className="pointer-events-none object-cover group-hover:opacity-75"
                     />

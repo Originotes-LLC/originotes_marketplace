@@ -1,8 +1,8 @@
-import type { DropzoneInputProps, DropzoneRootProps } from "react-dropzone";
 import { ExclamationCircleIcon, PhotoIcon } from "@heroicons/react/24/solid";
+import type { DropzoneInputProps, DropzoneRootProps } from "react-dropzone";
 
-import type { FieldErrors } from "react-hook-form";
 import { ServiceListingSchema } from "@/lib/schema";
+import type { FieldErrors } from "react-hook-form";
 import { z } from "zod";
 
 /* eslint-disable tailwindcss/no-custom-classname */
@@ -19,6 +19,7 @@ export function ListingFileUpload({
   serverErrors: any
   clientErrors: FieldErrors<z.infer<typeof ServiceListingSchema>>
 }) {
+
   return (
     <>
       <div {...getRootProps()}>
@@ -32,7 +33,7 @@ export function ListingFileUpload({
         <div
           className={
             serverErrors?.service_image_file || clientErrors?.uploaded_service_files
-              ? "mt-2 flex justify-center rounded-lg border-2 border-dashed border-red-500 px-6 py-10 dark:border-red-500"
+              ? "mt-2 flex justify-center rounded-lg border-2 border-dashed border-red-500 bg-red-100 px-6 py-10 dark:border-red-500"
               : "mt-2 flex justify-center rounded-lg border border-dashed border-neutral-900/25 px-6 py-10 dark:border-neutral-50"
           }
         >
@@ -63,9 +64,9 @@ export function ListingFileUpload({
           </div>
         </div>
         <div className="mt-2 flex items-center space-x-2">
-          {clientErrors?.uploaded_service_files && (
+          {clientErrors?.uploaded_service_files ? (
             <ExclamationCircleIcon className="size-7 text-red-500" />
-          )}
+          ) : null}
           <p className="mt-1 text-sm font-medium text-red-500">{clientErrors?.uploaded_service_files?.message}</p>
         </div>
 
