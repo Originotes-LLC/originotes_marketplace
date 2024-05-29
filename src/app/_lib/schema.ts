@@ -1,5 +1,25 @@
 import { z } from "zod";
 
+// const UploadedFilesSchema = z
+//   .array(
+//     z.object({
+//       status: z.number(),
+//       message: z.string(),
+//       data: z.object({
+//         url: z.string(),
+//         width: z.number(),
+//         height: z.number(),
+//       }),
+//     })
+//   )
+//   .nonempty();
+
+// interface UploadedFiles<T> {
+//   status: number;
+//   message: string;
+//   data: T;
+// }
+
 export const ServiceListingSchema = z.object({
   service_name: z
     .string()
@@ -24,29 +44,37 @@ export const ServiceListingSchema = z.object({
       return val;
     }),
   uploaded_service_files: z.string().transform((val, ctx) => {
-    if (!val.length) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Please upload at least one photo",
-      });
-      return z.NEVER;
-    }
+    try {
+      const parsedUploadedFiles = JSON.parse(val);
+      console.log(
+        "parsedUploadedFiles in Services schema: ",
+        parsedUploadedFiles
+      );
 
-    /*
-     z.object({
-        length: z.number(),
-        chunkSize: z.number(),
-        uploadDate: z.string(),
-        filename: z.string(),
-        content_type: z.string(),
-        date_created: z.string(),
-        date_uploaded: z.string(),
-        md5: z.string(),
-        url: z.string(),
-        id: z.string(),
-      })
-     */
-    return val;
+      if (!Array.isArray(parsedUploadedFiles)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Invalid file format",
+        });
+        return z.NEVER;
+      }
+      // TODO: remove window check later to see if this works in the browser
+      if (parsedUploadedFiles.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Please upload at least one file",
+        });
+        return z.NEVER;
+      }
+
+      return val;
+    } catch (error) {
+      return ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "Something went wrong. We were unable to get the submitted files. Please try again or contact support if the issue persists.",
+      });
+    }
   }),
   service_price: z
     .string({
@@ -64,10 +92,10 @@ export const ServiceListingSchema = z.object({
       }
       const num = parseFloat(val);
       // check if the number is a positive number
-      if (num < 0) {
+      if (num <= 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Price must be a positive number",
+          message: "Price must be greater than zero and a positive number",
         });
         return z.NEVER;
       }

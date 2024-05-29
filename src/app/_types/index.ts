@@ -4,6 +4,14 @@ export interface S3File {
   data: { url: string | null; width: number; height: number };
 }
 
+export interface CustomSwellFile {
+  date_created: string;
+  height: number;
+  id: string;
+  url: string;
+  width: number;
+}
+
 export interface SwellFile {
   length?: number;
   chunkSize?: number;
@@ -223,9 +231,10 @@ interface ProductCategories {
 export interface Product {
   name: string;
   sku?: null | string;
-  type: string;
+  type?: string;
   active: boolean;
-  images: SwellProductImage[];
+  images?: SwellProductImage[];
+  s3files_id: string[];
   purchase_options?: PurchaseOptions;
   variable?: boolean;
   description: string;

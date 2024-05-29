@@ -13,8 +13,9 @@ export const ListingFormFooter = ({
 }: {
   clientErrors: FieldErrors<z.infer<typeof ServiceListingSchema>>;
   // TODO: Fix the type of serverErrors
-  serverErrors: any;
+  serverErrors: any
 }) => {
+  console.log(`Server errors:`, serverErrors);
   const fieldWithError = (error: string) => {
     switch (error) {
       case "service_name":

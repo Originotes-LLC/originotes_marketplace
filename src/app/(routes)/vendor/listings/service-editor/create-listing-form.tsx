@@ -23,7 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 /* eslint-disable tailwindcss/no-custom-classname */
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,7 @@ import { ServiceListingSchema } from "@/lib/schema";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/utils/shadcdn_utils";
 import { submitNewService } from "@/vendor/actions";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { useFormState } from "react-dom";
 import { useUploadImages } from "@/listings/service-editor/_hooks/useUploadImages";
@@ -59,7 +60,6 @@ Fields needed to create a service
 
 const initialState = {
   status: 200,
-  code: "init",
   message: "",
   issues: {},
 };
@@ -70,9 +70,7 @@ export const CreateListingForm = ({
   categories: Category[];
 }) => {
   const [state, formAction] = useFormState(submitNewService, initialState);
-  state?.code === "draft-saved" && console.log("Draft saved");
-
-
+  console.log('server issues????: ', state?.issues);
   const form = useForm<z.infer<typeof ServiceListingSchema>>({
     mode: "onChange",
     resolver: zodResolver(ServiceListingSchema),
@@ -84,9 +82,35 @@ export const CreateListingForm = ({
     },
   });
 
-  const { isUploading, getRootProps, getInputProps, uploadedFiles } =
-    useUploadImages(form);
+  const {
+    isUploading,
+    getRootProps,
+    getInputProps,
+    uploadedFiles,
+    setUploadedFiles,
+  } = useUploadImages(form);
 
+  useEffect(() => {
+    if (state.status === 200 && state.message.length > 0) {
+      form.reset();
+      setUploadedFiles([]);
+      toast.success("Service created successfully", {
+        duration: 5000,
+        position: "top-right",
+        action: {
+          label: "Close",
+          onClick: () => { },
+        },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
+
+  useEffect(() => {
+    if (uploadedFiles.length > 0) {
+      form.setValue("uploaded_service_files", JSON.stringify(uploadedFiles));
+    }
+  }, [uploadedFiles, form])
 
   const handleFormData = (ref: React.RefObject<HTMLFormElement>) => {
     const formData = new FormData(ref.current!);
@@ -95,6 +119,7 @@ export const CreateListingForm = ({
   };
   const formRef = useRef<HTMLFormElement>(null);
   const { errors } = form.formState;
+  console.log("client errors: ", errors);
 
   return (
     <Form {...form}>
@@ -208,20 +233,21 @@ export const CreateListingForm = ({
                   <input
                     id="uploaded_service_files"
                     type="hidden"
-                    {...form.register("uploaded_service_files")}
-                    readOnly
-                    value={JSON.stringify(uploadedFiles)}
+                    {...form.register("uploaded_service_files", {
+                      required: true,
+                      value: JSON.stringify(uploadedFiles),
+                    })}
+                  // readOnly
+                  // value={JSON.stringify(uploadedFiles)}
                   />
                   {uploadedFiles && uploadedFiles.length > 0 ? (
                     <ImageGrid
                       isUploading={isUploading}
                       files={uploadedFiles}
-                      uploadBtn={
-                        {
-                          rootProps: getRootProps,
-                          inputProps: getInputProps,
-                        }
-                      }
+                      uploadBtn={{
+                        rootProps: getRootProps,
+                        inputProps: getInputProps,
+                      }}
                     />
                   ) : (
                     <ListingFileUpload
@@ -231,7 +257,6 @@ export const CreateListingForm = ({
                       getInputProps={getInputProps}
                     />
                   )}
-
                 </div>
 
                 {/* Service CATEGORIES Section */}

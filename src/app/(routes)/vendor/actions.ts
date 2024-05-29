@@ -1,7 +1,7 @@
 "use server";
 
+import type { CustomSwellFile, S3File } from "@/types/index";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import type { S3File, SwellFile, SwellProductImage } from "@/types/index";
 
 import { ServiceListingSchema } from "@/lib/schema";
 import { auth } from "@clerk/nextjs/server";
@@ -9,6 +9,7 @@ import { createProductDraft } from "@/lib/create-product-draft";
 import { getAccountByClerkId } from "@/lib/get-account-by-clerk-id";
 import { revalidatePath } from "next/cache";
 import sharp from "sharp";
+import swell from "@/lib/server";
 import { v4 as uuidv4 } from "uuid";
 
 export const submitNewService = async (prevState: any, formData: FormData) => {
@@ -23,25 +24,15 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
 
   const data = Object.fromEntries(formData);
   const parsed = await ServiceListingSchema.safeParseAsync(data);
+
   if (!parsed.success) {
     return {
       status: 400,
-      code: "invalid-form-data",
-      message: "Invalid form data",
+      message:
+        "Mmm, something went wrong. Please check the form and try fixing the issues.",
       issues: parsed.error.format(),
     };
   }
-
-  const parsedUploadedImages: SwellFile[] = JSON.parse(
-    parsed.data.uploaded_service_files
-  );
-  const transformedImages: SwellProductImage[] = parsedUploadedImages.map(
-    (img) => {
-      return {
-        file: img,
-      };
-    }
-  );
 
   if (
     "count" in loggedInSwellUser &&
@@ -54,16 +45,14 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
       name: parsed.data.service_name,
       price: Number(parsed.data.service_price),
       description: parsed.data.service_description,
-      images: transformedImages,
       vendor_id: id,
-      type: "digital",
       active: true,
+      s3files_id: ["s3files_id"],
     });
 
     if ("errors" in serviceDraft) {
       return {
         status: 400,
-        code: "server-error",
         message: "Error from server action",
         issues: {
           error: JSON.stringify(serviceDraft.errors, null, 2),
@@ -73,7 +62,6 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
       revalidatePath("/vendor/listings?page=1");
       return {
         status: 200,
-        code: "draft-saved",
         message: "Message draft saved successfully.",
         issues: {},
       };
@@ -81,7 +69,6 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
   }
   return {
     status: 400,
-    code: "invalid-user",
     message: "Invalid user",
   };
 };
@@ -97,10 +84,15 @@ const s3Client = new S3Client({
   },
 });
 
-export async function uploadFilesToAmazonS3(
-  formData: FormData
-): Promise<S3File[]> {
-  const files = formData.getAll("service_image_file") as File[];
+export async function uploadFilesToAmazonS3(formData: FormData | Error) {
+  if (formData instanceof Error) {
+    return [
+      createFileErrorResponse(400, "Invalid form data", {
+        service_image_file: "Please select valid photos.",
+      }),
+    ];
+  }
+  const files = formData.getAll("files") as File[];
 
   if (files.length === 0) {
     return [
@@ -232,3 +224,41 @@ function createFileErrorResponse(
     issues,
   };
 }
+
+export const saveUploadedFilesInSwell = async (
+  formData: FormData | Error
+): Promise<Error | CustomSwellFile[]> => {
+  if (formData instanceof Error) {
+    throw new Error("Invalid form data");
+  }
+  const parsedFiles = formData.getAll("files");
+  const deSerializedFiles = parsedFiles.map((file) =>
+    JSON.parse(file as string)
+  );
+
+  try {
+    const filesSavedInSwell = await Promise.all(
+      deSerializedFiles.map(async (file: S3File) => {
+        if (file.status === 200) {
+          const res = await swell.post("/content/s-3-file", {
+            url: file.data.url,
+            width: file.data.width,
+            height: file.data.height,
+          });
+          return res;
+        } else {
+          return file;
+        }
+      })
+    );
+
+    return filesSavedInSwell;
+  } catch (error) {
+    console.log("error trying to save s3 files in swell: ", error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("An error occurred while saving the files in Swell");
+    }
+  }
+};
