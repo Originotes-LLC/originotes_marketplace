@@ -56,7 +56,7 @@ export function ListingFileUpload({
                   className="sr-only"
                 />
               </label>
-              <p className={serverErrors?.service_image_file || clientErrors?.uploaded_service_files ? "pl-1 font-medium text-neutral-800" : "pl-1 font-medium text-neutral-200"}>&nbsp;or drag and drop</p>
+              <p className={serverErrors?.service_image_file || clientErrors?.uploaded_service_files ? "pl-1 font-medium text-neutral-800" : "pl-1 font-medium dark:text-neutral-200"}>&nbsp;or drag and drop</p>
             </div>
             <p className={serverErrors?.service_image_file || clientErrors?.uploaded_service_files ? "mt-2 text-xs font-medium leading-5 text-neutral-800" : "mt-2 text-xs leading-5 text-neutral-600 dark:text-neutral-200"}>
               PNG, JPG, MP4, JPEG and more are accepted

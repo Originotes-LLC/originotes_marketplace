@@ -12,7 +12,7 @@ export const ImageGrid = ({
   uploadBtn,
 }: {
   isUploading: boolean;
-  files: (S3File | File | CustomSwellFile)[];
+  files: (S3File | File | CustomSwellFile | null)[];
   uploadBtn: {
     rootProps: any;
     inputProps: any;
@@ -52,7 +52,8 @@ export const ImageGrid = ({
           </li>
         ) : firstImage &&
           typeof firstImage === "object" &&
-          "data" in firstImage && firstImage.status === 200 ? (
+          "data" in firstImage &&
+          firstImage.status === 200 ? (
           <li className="size-full">
             <div className="aspect-h-7 aspect-w-10 group relative block size-full overflow-hidden rounded-lg border border-neutral-300">
               <Image
@@ -76,11 +77,13 @@ export const ImageGrid = ({
               />
             </div>
           </li>
-        ) : (<li className="size-full">
-          <div className="aspect-h-7 aspect-w-10 group relative block size-full overflow-hidden rounded-lg border border-neutral-300">
-            <p className="text-red-500">Image failed to upload</p>
-          </div>
-        </li >)}
+        ) : (
+          <li className="size-full">
+            <div className="aspect-h-7 aspect-w-10 group relative block size-full overflow-hidden rounded-lg border border-neutral-300">
+              <p className="text-red-500">Image failed to upload</p>
+            </div>
+          </li>
+        )}
       </ul>
       <ul role="list" className="grid grid-cols-3 gap-2">
         {rest.length > 0 &&
@@ -92,9 +95,7 @@ export const ImageGrid = ({
                     <div className="flex size-full items-center justify-center">
                       <RiImageAddFill className="size-8 text-neutral-300 dark:text-neutral-200" />
                     </div>
-
                     <GridUploadInput
-
                       getRootProps={uploadBtn.rootProps}
                       getInputProps={uploadBtn.inputProps}
                     />
@@ -103,21 +104,25 @@ export const ImageGrid = ({
               );
             }
 
-            if (typeof elem === "object" && "data" in elem && elem.status === 200) {
-              return (
-                <li className="size-full" key={elem.data.url}>
-                  <div className="aspect-h-7 aspect-w-10 group block size-full overflow-hidden rounded-lg border border-neutral-300">
-                    <Image
-                      width={elem.data.width}
-                      height={elem.data.height}
-                      src={elem.data.url!}
-                      alt=""
-                      className="pointer-events-none object-cover group-hover:opacity-75"
-                    />
-                  </div>
-                </li>
-              );
-            }
+            // if (
+            //   typeof elem === "object" &&
+            //   "data" in elem &&
+            //   elem.status === 200
+            // ) {
+            //   return (
+            //     <li className="size-full" key={elem.data.url}>
+            //       <div className="aspect-h-7 aspect-w-10 group block size-full overflow-hidden rounded-lg border border-neutral-300">
+            //         <Image
+            //           width={elem.data.width}
+            //           height={elem.data.height}
+            //           src={elem.data.url!}
+            //           alt=""
+            //           className="pointer-events-none object-cover group-hover:opacity-75"
+            //         />
+            //       </div>
+            //     </li>
+            //   );
+            // }
 
             if ("url" in elem) {
               return (

@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
 
 /*
-
 TODO: Once we will decide on how to store videos, we will implement video upload functionality
 "video/mp4": [".mp4"],
 "video/quicktime": [".mov"],
@@ -30,9 +29,8 @@ TODO: Once we will decide on how to store videos, we will implement video upload
 */
 export const useUploadImages = () => {
   const [uploadedFiles, setUploadedFiles] = useState<
-    (File | S3File | CustomSwellFile)[]
+    (File | S3File | CustomSwellFile | null)[]
   >([]);
-  console.log("uploadedFiles: ", uploadedFiles);
 
   const [isUploading, setIsUploading] = useState(false);
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
@@ -45,9 +43,49 @@ export const useUploadImages = () => {
       "image/gif": [".gif"],
     },
     onDrop: async (acceptedFiles: File[]) => {
+      const filesToKeep = uploadedFiles.filter((file) => file !== null);
+
+      if (filesToKeep.length + acceptedFiles.length > 10) {
+        toast.error(
+          `You can only upload up to 10 files. Please upload just ${10 - filesToKeep.length} more ${10 - filesToKeep.length > 1 ? "files" : "file"}.`,
+          {
+            duration: 15000,
+            closeButton: true,
+            position: "top-right",
+          }
+        );
+        return;
+      }
+
       if (acceptedFiles.length > 0) {
         setIsUploading(true);
-        setUploadedFiles([...acceptedFiles]);
+        setUploadedFiles((oldFiles) => {
+          const nonNullFiles = oldFiles.filter((file) => file !== null);
+
+          if (nonNullFiles.length === 10) {
+            // console.log(`we already have 10 files`);
+            return [...oldFiles];
+          }
+
+          if (nonNullFiles.length + acceptedFiles.length < 10) {
+            // console.log(`we still have less than 10 files`);
+            return [
+              ...nonNullFiles,
+              ...acceptedFiles,
+              ...Array.from({
+                length: 10 - (nonNullFiles.length + acceptedFiles.length),
+              }).fill(null),
+            ] as (File | S3File | CustomSwellFile | null)[];
+          }
+
+          if (nonNullFiles.length + acceptedFiles.length === 10) {
+            // console.log(`we have 10 files between uploaded and accepted files`);
+            return [...nonNullFiles, ...acceptedFiles];
+          }
+
+          return oldFiles;
+        });
+
         // upload the files to AWS S3 bucket
         const appendedFiles = appendMultipleFilesToFormData(
           "files",
@@ -76,7 +114,19 @@ export const useUploadImages = () => {
             }
           );
         } else {
-          setUploadedFiles(filesSavedInSwell);
+          setUploadedFiles((prevFiles) => {
+            const filesToKeep = prevFiles.filter(
+              (file) => file !== null && !(file instanceof File)
+            );
+
+            return [
+              ...filesToKeep,
+              ...filesSavedInSwell,
+              ...Array.from({
+                length: 10 - (filesToKeep.length + filesSavedInSwell.length),
+              }).fill(null),
+            ] as (File | S3File | CustomSwellFile | null)[];
+          });
           setIsUploading(false);
         }
       }
