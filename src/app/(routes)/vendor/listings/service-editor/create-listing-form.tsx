@@ -70,7 +70,7 @@ export const CreateListingForm = ({
   categories: Category[];
 }) => {
   const [state, formAction] = useFormState(submitNewService, initialState);
-  console.log('server issues????: ', state?.issues);
+
   const form = useForm<z.infer<typeof ServiceListingSchema>>({
     mode: "onChange",
     resolver: zodResolver(ServiceListingSchema),
@@ -119,7 +119,7 @@ export const CreateListingForm = ({
   };
   const formRef = useRef<HTMLFormElement>(null);
   const { errors } = form.formState;
-  console.log("client errors: ", errors);
+
 
   return (
     <Form {...form}>
