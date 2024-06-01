@@ -5,13 +5,10 @@ import {
 } from "@/vendor/actions";
 import { useEffect, useState } from "react";
 
-import { ServiceListingSchema } from "@/lib/schema";
-import type { UseFormReturn } from "react-hook-form";
 import { appendMultipleFilesToFormData } from "@/utils/formData-multiple-append";
 import { reduceErrorCodes } from "@/utils/reduce-error-codes";
 import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
-import { z } from "zod";
 
 /*
 
@@ -31,9 +28,7 @@ TODO: Once we will decide on how to store videos, we will implement video upload
 "video/ogg": [".ogg"],
 "video/webm": [".webm"],
 */
-export const useUploadImages = (
-  form: UseFormReturn<z.infer<typeof ServiceListingSchema>>
-) => {
+export const useUploadImages = () => {
   const [uploadedFiles, setUploadedFiles] = useState<
     (File | S3File | CustomSwellFile)[]
   >([]);
@@ -70,9 +65,19 @@ export const useUploadImages = (
 
         // TODO: Handle the case when the files are not saved in Swell and you get an Error
         if (filesSavedInSwell instanceof Error) {
+          setIsUploading(false);
           console.log("Error saving files in Swell: ", filesSavedInSwell);
+          toast.error(
+            "There was an error trying to save the file(s) in the database",
+            {
+              duration: 15000,
+              closeButton: true,
+              position: "top-right",
+            }
+          );
         } else {
           setUploadedFiles(filesSavedInSwell);
+          setIsUploading(false);
         }
       }
       return null;

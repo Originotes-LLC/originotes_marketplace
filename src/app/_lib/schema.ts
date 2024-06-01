@@ -58,7 +58,7 @@ export const ServiceListingSchema = z.object({
         });
         return z.NEVER;
       }
-      // TODO: remove window check later to see if this works in the browser
+
       if (parsedUploadedFiles.length === 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

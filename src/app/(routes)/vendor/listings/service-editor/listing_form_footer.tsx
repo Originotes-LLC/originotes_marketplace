@@ -8,14 +8,15 @@ import { useFormStatus } from "react-dom";
 import { z } from "zod";
 
 export const ListingFormFooter = ({
+  isUploading,
   clientErrors,
   serverErrors,
 }: {
+  isUploading: boolean;
   clientErrors: FieldErrors<z.infer<typeof ServiceListingSchema>>;
   // TODO: Fix the type of serverErrors
   serverErrors: any
 }) => {
-  console.log(`Server errors:`, serverErrors);
   const fieldWithError = (error: string) => {
     switch (error) {
       case "service_name":
@@ -34,6 +35,7 @@ export const ListingFormFooter = ({
   };
 
   const { pending } = useFormStatus();
+
   return (
     <footer className="bg-neutral-100 dark:bg-neutral-800">
       <div className="overflow-hidden p-8 lg:pl-72">
@@ -82,7 +84,7 @@ export const ListingFormFooter = ({
           <button
             type="button"
             className={
-              pending
+              pending || isUploading
                 ? "hidden w-full rounded-full bg-neutral-200 px-4 py-2.5 text-sm font-semibold text-neutral-500 shadow-sm md:inline-block md:w-fit"
                 : "hidden w-full rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-neutral-900 shadow-sm ring-1 ring-inset ring-neutral-300 transition-all duration-100 ease-in hover:scale-110 hover:bg-neutral-50 md:inline-block md:w-fit"
             }
@@ -90,20 +92,20 @@ export const ListingFormFooter = ({
             Preview
           </button>
           <button
-            disabled={pending}
+            disabled={pending || isUploading}
             type="submit"
             className={
-              pending
+              pending || isUploading
                 ? "w-full rounded-full bg-neutral-200 px-4 py-2.5 text-sm font-semibold text-neutral-500 shadow-sm md:w-fit"
                 : "w-full rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-neutral-900 shadow-sm ring-1 ring-inset ring-neutral-300 transition-all duration-100 ease-in hover:scale-110 hover:bg-neutral-50 md:w-fit"
             }
           >
-            {pending ? "Saving..." : "Save as draft"}
+            {pending || isUploading ? "Saving..." : "Save as draft"}
           </button>
           <button
             type="button"
             className={
-              pending
+              pending || isUploading
                 ? "w-full rounded-full bg-neutral-200 px-4 py-2.5 text-sm font-semibold text-neutral-500 shadow-sm md:w-fit"
                 : "w-full rounded-full bg-fuchsia-100 px-4 py-2.5 text-sm font-semibold text-neutral-900 shadow-sm ring-1 ring-inset ring-fuchsia-300 transition-all duration-100 ease-in hover:scale-110 hover:bg-fuchsia-500 hover:text-white md:w-fit"
             }

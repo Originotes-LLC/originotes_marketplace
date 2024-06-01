@@ -1,8 +1,8 @@
-import { ExclamationCircleIcon, PhotoIcon } from "@heroicons/react/24/solid";
 import type { DropzoneInputProps, DropzoneRootProps } from "react-dropzone";
+import { ExclamationCircleIcon, PhotoIcon } from "@heroicons/react/24/solid";
 
-import { ServiceListingSchema } from "@/lib/schema";
 import type { FieldErrors } from "react-hook-form";
+import { ServiceListingSchema } from "@/lib/schema";
 import { z } from "zod";
 
 /* eslint-disable tailwindcss/no-custom-classname */
@@ -47,7 +47,7 @@ export function ListingFileUpload({
                 htmlFor="service_image_file"
                 className="relative cursor-pointer rounded-md font-semibold text-fuchsia-400 focus-within:outline-none focus-within:ring-2 focus-within:ring-fuchsia-600 focus-within:ring-offset-2 hover:text-fuchsia-500"
               >
-                <span>Upload up to 10 images</span>
+                {serverErrors?.service_image_file || clientErrors?.uploaded_service_files ? <span className="text-red-500">Upload up to 10 images</span> : <span>Upload up to 10 images</span>}
                 <input
                   {...getInputProps()}
                   id="service_image_file"
@@ -56,9 +56,9 @@ export function ListingFileUpload({
                   className="sr-only"
                 />
               </label>
-              <p className="pl-1">&nbsp;or drag and drop</p>
+              <p className={serverErrors?.service_image_file || clientErrors?.uploaded_service_files ? "pl-1 font-medium text-neutral-800" : "pl-1 font-medium text-neutral-200"}>&nbsp;or drag and drop</p>
             </div>
-            <p className="mt-2 text-xs leading-5 text-neutral-600 dark:text-neutral-200">
+            <p className={serverErrors?.service_image_file || clientErrors?.uploaded_service_files ? "mt-2 text-xs font-medium leading-5 text-neutral-800" : "mt-2 text-xs leading-5 text-neutral-600 dark:text-neutral-200"}>
               PNG, JPG, MP4, JPEG and more are accepted
             </p>
           </div>

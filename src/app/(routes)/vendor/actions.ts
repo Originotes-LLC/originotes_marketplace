@@ -24,6 +24,7 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
 
   const data = Object.fromEntries(formData);
   const parsed = await ServiceListingSchema.safeParseAsync(data);
+  console.log("parsed: ", parsed);
 
   if (!parsed.success) {
     return {
@@ -33,6 +34,12 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
       issues: parsed.error.format(),
     };
   }
+
+  const uploadedFilesIds: string[] | [] = parsed?.data?.uploaded_service_files
+    ? JSON.parse(parsed.data.uploaded_service_files).map(
+        (file: CustomSwellFile) => file.id
+      )
+    : [];
 
   if (
     "count" in loggedInSwellUser &&
@@ -47,7 +54,7 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
       description: parsed.data.service_description,
       vendor_id: id,
       active: true,
-      s3files_id: ["s3files_id"],
+      s3files_id: uploadedFilesIds,
     });
 
     if ("errors" in serviceDraft) {
