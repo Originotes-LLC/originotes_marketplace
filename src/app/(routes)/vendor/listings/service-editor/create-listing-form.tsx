@@ -88,13 +88,13 @@ export const CreateListingForm = ({
     getInputProps,
     uploadedFiles,
     setUploadedFiles,
-  } = useUploadImages(form);
+  } = useUploadImages();
 
   useEffect(() => {
     if (state.status === 200 && state.message.length > 0) {
       form.reset();
       setUploadedFiles([]);
-      toast.success("Service created successfully", {
+      toast("Your service draft has been saved!", {
         duration: 5000,
         position: "top-right",
         action: {
@@ -418,6 +418,7 @@ export const CreateListingForm = ({
         </div>
         <div className="fixed inset-x-0 bottom-0">
           <ListingFormFooter
+            isUploading={isUploading}
             clientErrors={errors}
             serverErrors={state?.issues}
           />

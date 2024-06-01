@@ -1,7 +1,7 @@
 import "server-only";
 
-import swell from "@/lib/server";
 import type { Product } from "@/types/index";
+import swell from "@/lib/server";
 
 export const createProductDraft = async (productData: Product) => {
   const res = await swell.post("/products", {
@@ -11,6 +11,9 @@ export const createProductDraft = async (productData: Product) => {
     active: productData.active,
     virtual: true,
     vendor_id: productData.vendor_id,
+    content: {
+      s3files_id: productData.s3files_id,
+    },
   });
 
   return res;
