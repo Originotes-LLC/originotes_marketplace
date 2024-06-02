@@ -29,7 +29,7 @@ export default defineConfig({
   webServer: process.env.CI
     ? undefined
     : {
-        command: `yarn dev`,
+        command: `npm run dev`,
         url: baseURL,
         timeout: 120 * 1000,
         reuseExistingServer: true,
