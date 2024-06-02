@@ -13,8 +13,8 @@ jobs:
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
         id: waitForDeploy
         with:
-          token: ${{ secrets.ORIGINOTES_TOKEN }}
-          max_timeout: 300
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 600
       # access preview url
       - run: echo ${{steps.waitForDeploy.outputs.url}}
       - uses: actions/checkout@v4
