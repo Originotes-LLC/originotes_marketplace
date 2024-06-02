@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
       <html suppressHydrationWarning className="h-full" lang="en">
         <body className={`h-full ${inter.className} antialiased`}>
           <ThemeProvider
