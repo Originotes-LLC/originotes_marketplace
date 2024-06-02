@@ -26,12 +26,14 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: "npm run dev",
-    url: baseURL,
-    timeout: 120 * 1000,
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: process.env.CI
+    ? undefined
+    : {
+        command: `yarn dev`,
+        url: baseURL,
+        timeout: 120 * 1000,
+        reuseExistingServer: true,
+      },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     baseURL,
