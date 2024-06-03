@@ -12,7 +12,7 @@ export const createProductDraft = async (productData: Product) => {
     virtual: true,
     vendor_id: productData.vendor_id,
     content: {
-      s3files_id: productData.s3files_id,
+      s3files_id: productData.content.s3files_id,
     },
   });
 

@@ -10,23 +10,6 @@ import { reduceErrorCodes } from "@/utils/reduce-error-codes";
 import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
 
-/*
-TODO: Once we will decide on how to store videos, we will implement video upload functionality
-"video/mp4": [".mp4"],
-"video/quicktime": [".mov"],
-"video/avi": [".avi"],
-"video/x-msvideo": [".avi"],
-"video/x-flv": [".flv"],
-"video/x-matroska": [".mkv"],
-"video/x-ms-wmv": [".wmv"],
-"video/x-ms-asf": [".asf"],
-"video/x-mpeg": [".mpeg"],
-"video/x-ogm": [".ogm"],
-"video/3gpp": [".3gp"],
-"video/3gpp2": [".3g2"],
-"video/ogg": [".ogg"],
-"video/webm": [".webm"],
-*/
 export const useUploadImages = () => {
   const [uploadedFiles, setUploadedFiles] = useState<
     (File | S3File | CustomSwellFile | null)[]
@@ -52,7 +35,7 @@ export const useUploadImages = () => {
             duration: 15000,
             closeButton: true,
             position: "top-right",
-          }
+          },
         );
         return;
       }
@@ -63,12 +46,10 @@ export const useUploadImages = () => {
           const nonNullFiles = oldFiles.filter((file) => file !== null);
 
           if (nonNullFiles.length === 10) {
-            // console.log(`we already have 10 files`);
             return [...oldFiles];
           }
 
           if (nonNullFiles.length + acceptedFiles.length < 10) {
-            // console.log(`we still have less than 10 files`);
             return [
               ...nonNullFiles,
               ...acceptedFiles,
@@ -79,7 +60,6 @@ export const useUploadImages = () => {
           }
 
           if (nonNullFiles.length + acceptedFiles.length === 10) {
-            // console.log(`we have 10 files between uploaded and accepted files`);
             return [...nonNullFiles, ...acceptedFiles];
           }
 
@@ -89,14 +69,14 @@ export const useUploadImages = () => {
         // upload the files to AWS S3 bucket
         const appendedFiles = appendMultipleFilesToFormData(
           "files",
-          acceptedFiles
+          acceptedFiles,
         );
 
         const filesSavedInS3 = await uploadFilesToAmazonS3(appendedFiles);
         // save the files in Swell after uploading to S3
         const savedS3Files = appendMultipleFilesToFormData(
           "files",
-          filesSavedInS3
+          filesSavedInS3,
         );
 
         const filesSavedInSwell = await saveUploadedFilesInSwell(savedS3Files);
@@ -111,12 +91,12 @@ export const useUploadImages = () => {
               duration: 15000,
               closeButton: true,
               position: "top-right",
-            }
+            },
           );
         } else {
           setUploadedFiles((prevFiles) => {
             const filesToKeep = prevFiles.filter(
-              (file) => file !== null && !(file instanceof File)
+              (file) => file !== null && !(file instanceof File),
             );
 
             return [
