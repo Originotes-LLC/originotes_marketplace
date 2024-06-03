@@ -1,8 +1,15 @@
-import { getAccountByClerkId } from "@/lib/get-account-by-clerk-id";
-import { getProductsByPage } from "@/lib/get-products-by-page";
-import { type ProductsPerPage } from "@/types/index";
-import { getErrorMessage } from "@/utils/get-error-message";
 import "server-only";
+
+import type {
+  CustomSwellFile,
+  ProductsPerPage,
+  SwellResponse,
+} from "@/types/index";
+
+import { getAccountByClerkId } from "@/lib/get-account-by-clerk-id";
+import { getErrorMessage } from "@/utils/get-error-message";
+import { getProductsByPage } from "@/lib/get-products-by-page";
+import { getS3Files } from "@/lib/getS3Files";
 
 /*
   in case of an invalid PUT, POST, or DELETE request the Swell NODE library will return the SwellError type 
@@ -10,7 +17,7 @@ import "server-only";
 */
 export const getServicesByVendorId = async (
   clerkId: string | undefined,
-  page: number
+  page: number,
 ): Promise<ProductsPerPage | { message: string }> => {
   // check if the page is a Number and if it's 1 or greater
   if (isNaN(page) || page < 1) getErrorMessage("Invalid page number provided.");
@@ -38,13 +45,29 @@ export const getServicesByVendorId = async (
       const { id } = currentVendor.results[0];
 
       try {
-        const services = getProductsByPage(page, id);
+        const services = await getProductsByPage(page, id);
 
         if (services instanceof Error || "message" in services) {
           const unknownError = getErrorMessage(services.message);
           return {
             message: unknownError,
           };
+        }
+        // now get the S3 Images for each service
+        for (const product of services.results) {
+          if ("s3files_id" in product.content) {
+            const s3Files: string | SwellResponse<CustomSwellFile> =
+              await getS3Files(product.content.s3files_id);
+            if (typeof s3Files === "string") {
+              throw new Error(
+                `Error getting the  requested S3 file: ${s3Files}`,
+              );
+            }
+            for (const file of s3Files.results) {
+              if (!product.s3Images) product.s3Images = [];
+              product.s3Images.push(file);
+            }
+          }
         }
 
         return services;

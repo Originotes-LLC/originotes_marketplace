@@ -46,10 +46,6 @@ export const ServiceListingSchema = z.object({
   uploaded_service_files: z.string().transform((val, ctx) => {
     try {
       const parsedUploadedFiles = JSON.parse(val);
-      console.log(
-        "parsedUploadedFiles in Services schema: ",
-        parsedUploadedFiles
-      );
 
       if (!Array.isArray(parsedUploadedFiles)) {
         ctx.addIssue({

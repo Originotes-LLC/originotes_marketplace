@@ -16,7 +16,7 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
   const { userId } = auth();
   if (!userId) {
     throw new Error(
-      "You must be signed in to perform this action. If this error persists please contact support."
+      "You must be signed in to perform this action. If this error persists please contact support.",
     );
   }
 
@@ -36,8 +36,14 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
   }
 
   const uploadedFilesIds: string[] | [] = parsed?.data?.uploaded_service_files
-    ? JSON.parse(parsed.data.uploaded_service_files).map(
-        (file: CustomSwellFile) => file.id
+    ? JSON.parse(parsed.data.uploaded_service_files).reduce(
+        (result: string[], file: CustomSwellFile) => {
+          if (file?.id) {
+            result.push(file.id);
+          }
+          return result;
+        },
+        [],
       )
     : [];
 
@@ -54,7 +60,9 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
       description: parsed.data.service_description,
       vendor_id: id,
       active: true,
-      s3files_id: uploadedFilesIds,
+      content: {
+        s3files_id: uploadedFilesIds,
+      },
     });
 
     if ("errors" in serviceDraft) {
@@ -129,7 +137,7 @@ export async function uploadFilesToAmazonS3(formData: FormData | Error) {
         `File ${file.name} exceeds the maximum size of 5MB.`,
         {
           service_image_file: `File ${file.name} exceeds the maximum size of 5MB.`,
-        }
+        },
       );
     }
 
@@ -188,7 +196,7 @@ export async function uploadFilesToAmazonS3(formData: FormData | Error) {
           `Failed to upload file ${file.name}`,
           {
             service_image_file: `Failed to upload file ${file.name}.`,
-          }
+          },
         );
       }
     } catch (error) {
@@ -198,7 +206,7 @@ export async function uploadFilesToAmazonS3(formData: FormData | Error) {
         `Failed to upload file ${file.name}`,
         {
           service_image_file: `Failed to upload file ${file.name}.`,
-        }
+        },
       );
     }
   });
@@ -218,7 +226,7 @@ export async function uploadFilesToAmazonS3(formData: FormData | Error) {
 function createFileErrorResponse(
   status: number,
   message: string,
-  issues: { [key: string]: string }
+  issues: { [key: string]: string },
 ) {
   return {
     status,
@@ -233,21 +241,21 @@ function createFileErrorResponse(
 }
 
 export const saveUploadedFilesInSwell = async (
-  formData: FormData | Error
+  formData: FormData | Error,
 ): Promise<Error | CustomSwellFile[]> => {
   if (formData instanceof Error) {
     throw new Error("Invalid form data");
   }
   const parsedFiles = formData.getAll("files");
   const deSerializedFiles = parsedFiles.map((file) =>
-    JSON.parse(file as string)
+    JSON.parse(file as string),
   );
 
   try {
     const filesSavedInSwell = await Promise.all(
       deSerializedFiles.map(async (file: S3File) => {
         if (file.status === 200) {
-          const res = await swell.post("/content/s-3-file", {
+          const res = await swell.post("/content/s-3-files", {
             url: file.data.url,
             width: file.data.width,
             height: file.data.height,
@@ -256,7 +264,7 @@ export const saveUploadedFilesInSwell = async (
         } else {
           return file;
         }
-      })
+      }),
     );
 
     return filesSavedInSwell;

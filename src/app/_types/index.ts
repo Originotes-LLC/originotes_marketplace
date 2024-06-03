@@ -234,9 +234,12 @@ export interface Product {
   type?: string;
   active: boolean;
   images?: SwellProductImage[];
-  s3files_id: string[];
   purchase_options?: PurchaseOptions;
   variable?: boolean;
+  content: {
+    s3files_id: string[];
+  };
+  s3Images: CustomSwellFile[];
   description: string;
   tags?: string[];
   meta_title?: null | string;

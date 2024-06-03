@@ -16,7 +16,7 @@ export default async function VendorListings({
   const page = searchParams.page ? parseInt(searchParams.page as string) : 1;
   const user = await currentUser();
   const services = await getServicesByVendorId(user?.id, page);
-
+  // console.log('services: ', JSON.stringify(services, null, 2));
 
   if ("message" in services) {
     throw new Error(services.message);
@@ -30,7 +30,11 @@ export default async function VendorListings({
             <ListingHeader />
           </div>
           {/* TODO: Improve the Loading Services aka use Skeleton loader?  */}
-          <Suspense fallback={<p className="font-semibold text-black">Loading services...</p>}>
+          <Suspense
+            fallback={
+              <p className="font-semibold text-black">Loading services...</p>
+            }
+          >
             {!services?.count ? (
               <div className="mx-auto max-w-7xl grow px-6 lg:px-8">
                 <EmptyListings />
@@ -42,7 +46,11 @@ export default async function VendorListings({
             )}
           </Suspense>
           {/* TODO: Improve the loading pagination as well, maybe a skeleton as well */}
-          <Suspense fallback={<p className="font-semibold text-black">Loading pagination...</p>}>
+          <Suspense
+            fallback={
+              <p className="font-semibold text-black">Loading pagination...</p>
+            }
+          >
             <div className="flex-none">
               <ListingPagination
                 count={services.count}
