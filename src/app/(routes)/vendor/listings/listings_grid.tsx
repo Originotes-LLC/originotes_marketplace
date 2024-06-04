@@ -15,11 +15,11 @@ export const ListingsGrid = ({ services }: { services: Product[] }) => {
               className="flex flex-col items-start justify-between"
             >
               <div className="relative w-full">
-                {service?.images?.[0]?.file?.width && service?.images?.[0]?.file?.height && (
+                {service?.s3Images?.[0]?.width && service?.s3Images?.[0]?.height && (
                   <Image
-                    width={service.images[0].file?.width}
-                    height={service.images[0].file?.height}
-                    src={service.images[0].file.url}
+                    width={service.s3Images[0]?.width}
+                    height={service.s3Images[0]?.height}
+                    src={service.s3Images[0]?.url}
                     alt=""
                     className="aspect-[16/9] w-full rounded-2xl bg-neutral-100 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
                   />
