@@ -2,7 +2,18 @@ name: Playwright Tests
 on:
   deployment_status:
 jobs:
+  top-level-vars:
+    environment: Preview
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read Clerk environment variables
+        run: echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is ${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}"
+      - name: Read Clerk secrets
+        run: echo "CLERK_SECRET_KEY is ${{ secrets.CLERK_SECRET_KEY }}"
+      - name: Read Clerk FAPI
+        run: echo "CLERK_FAPI is ${{vars.CLERK_FAPI}}"
   e2e-tests:
+    environment: Preview
     timeout-minutes: 60
     runs-on: ubuntu-latest
     if: github.event.deployment_status.state == 'success'
@@ -17,5 +28,8 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: npx playwright test
-        env:
-          PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.target_url }}
+    env:
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+      CLERK_FAPI: ${{ vars.CLERK_FAPI }}
+      BASE_URL: ${{ github.event.deployment_status.target_url }}

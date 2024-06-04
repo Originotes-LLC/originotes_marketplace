@@ -8,7 +8,7 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 
 // Set webServer.url and use.baseURL with the location of the WebServer respecting the correct set port
-const baseURL = `http://localhost:${PORT}`;
+const baseURL = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
   // Timeout per test
@@ -36,7 +36,7 @@ export default defineConfig({
       },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL,
+    baseURL: process.env.BASE_URL,
     trace: "retry-with-trace",
   },
 
