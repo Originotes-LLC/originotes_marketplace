@@ -11,17 +11,20 @@ import { serviceCategories } from "@/lib/service-categories";
 export default async function ServiceEditor() {
   const categories: SwellResponse<Category> | { message: string } =
     await serviceCategories();
+  // console.log('categories: ', categories);
 
 
   if ("message" in categories) {
     throw new Error(categories.message);
   }
 
+  const listOfCategories = categories.results
+
   return (
     <main className="flex size-full flex-col py-6 lg:pl-72 dark:bg-neutral-900">
       <ServiceEditorHeader />
       <div className="px-6 py-12 lg:px-8 dark:bg-neutral-900">
-        <CreateListingForm categories={categories?.results} />
+        <CreateListingForm categories={listOfCategories} />
       </div>
     </main>
   );
