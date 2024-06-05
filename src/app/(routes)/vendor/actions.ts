@@ -8,6 +8,7 @@ import { auth } from "@clerk/nextjs/server";
 import { createProductDraft } from "@/lib/create-product-draft";
 import { getAccountByClerkId } from "@/lib/get-account-by-clerk-id";
 import { revalidatePath } from "next/cache";
+import { serviceCategories } from "@/lib/service-categories";
 import sharp from "sharp";
 import swell from "@/lib/server";
 import { v4 as uuidv4 } from "uuid";
@@ -20,11 +21,9 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
     );
   }
 
-  const loggedInSwellUser = await getAccountByClerkId(userId);
-
   const data = Object.fromEntries(formData);
   const parsed = await ServiceListingSchema.safeParseAsync(data);
-  console.log("parsed: ", parsed);
+  // console.log("parsed data on the submitNewService server action: ", parsed);
 
   if (!parsed.success) {
     return {
@@ -32,6 +31,35 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
       message:
         "Mmm, something went wrong. Please check the form and try fixing the issues.",
       issues: parsed.error.format(),
+    };
+  }
+
+  // get the categories and associate the product with the selected category
+  const selectedCategory = parsed.data.service_category;
+  const categoriesFromSwell = await serviceCategories();
+
+  if ("message" in categoriesFromSwell) {
+    return {
+      status: 400,
+      message: "Error trying to get the categories from Swell.",
+      issues: {
+        error: categoriesFromSwell.message,
+      },
+    };
+  }
+
+  const category = categoriesFromSwell.results.find(
+    (cat) => cat.name === selectedCategory,
+  );
+
+  if (!category) {
+    return {
+      status: 400,
+      message: "Invalid category",
+      issues: {
+        service_category:
+          "We have not received a valid category. Please select a category from the list.",
+      },
     };
   }
 
@@ -46,6 +74,8 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
         [],
       )
     : [];
+
+  const loggedInSwellUser = await getAccountByClerkId(userId);
 
   if (
     "count" in loggedInSwellUser &&
@@ -74,6 +104,32 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
         },
       };
     } else {
+      // get the service draft ID to associate the product with the selected category
+      const serviceDraftId = serviceDraft.id;
+      const categoryId = category.id;
+
+      const associatedProductToCategory = await swell.post(
+        "/categories:products",
+        {
+          product_id: serviceDraftId,
+          parent_id: categoryId,
+        },
+      );
+
+      if (
+        !associatedProductToCategory ||
+        "errors" in associatedProductToCategory ||
+        associatedProductToCategory instanceof Error
+      ) {
+        return {
+          status: 400,
+          message: "Error from server action",
+          issues: {
+            error: JSON.stringify(associatedProductToCategory.errors, null, 2),
+          },
+        };
+      }
+
       revalidatePath("/vendor/listings?page=1");
       return {
         status: 200,

@@ -94,7 +94,7 @@ export const CreateListingForm = ({
     if (state.status === 200 && state.message.length > 0) {
       form.reset();
       setUploadedFiles([]);
-      toast("Your service draft has been saved!", {
+      toast("Your draft has been saved!", {
         duration: 5000,
         position: "top-right",
         action: {
@@ -128,7 +128,7 @@ export const CreateListingForm = ({
         action={formAction}
         onSubmit={(evt) => {
           evt.preventDefault();
-          form.handleSubmit((formData) => {
+          form.handleSubmit(() => {
             return formAction(handleFormData(formRef));
           })(evt);
         }}
@@ -237,8 +237,6 @@ export const CreateListingForm = ({
                       required: true,
                       value: JSON.stringify(uploadedFiles),
                     })}
-                  // readOnly
-                  // value={JSON.stringify(uploadedFiles)}
                   />
                   {uploadedFiles && uploadedFiles.length > 0 ? (
                     <ImageGrid
