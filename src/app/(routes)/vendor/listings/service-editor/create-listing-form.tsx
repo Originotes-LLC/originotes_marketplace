@@ -27,7 +27,7 @@ import React, { useEffect, useRef } from "react";
 
 /* eslint-disable tailwindcss/no-custom-classname */
 import { Button } from "@/components/ui/button";
-import type { Category } from "@/types/index";
+import type { Category, } from "@/types/index";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { ImageGrid } from "@/listings/service-editor/image-grid";
 import { Input } from "@/components/ui/input";
@@ -83,6 +83,7 @@ export const CreateListingForm = ({
   });
 
   const {
+    deleteImage,
     isUploading,
     getRootProps,
     getInputProps,
@@ -110,7 +111,7 @@ export const CreateListingForm = ({
     if (uploadedFiles.length > 0) {
       form.setValue("uploaded_service_files", JSON.stringify(uploadedFiles));
     }
-  }, [uploadedFiles, form])
+  }, [uploadedFiles, form]);
 
   const handleFormData = (ref: React.RefObject<HTMLFormElement>) => {
     const formData = new FormData(ref.current!);
@@ -119,7 +120,6 @@ export const CreateListingForm = ({
   };
   const formRef = useRef<HTMLFormElement>(null);
   const { errors } = form.formState;
-
 
   return (
     <Form {...form}>
@@ -240,6 +240,7 @@ export const CreateListingForm = ({
                   />
                   {uploadedFiles && uploadedFiles.length > 0 ? (
                     <ImageGrid
+                      deleteImage={deleteImage}
                       isUploading={isUploading}
                       files={uploadedFiles}
                       uploadBtn={{
@@ -274,9 +275,9 @@ export const CreateListingForm = ({
                               role="combobox"
                               className={cn(
                                 errors.service_category
-                                  ? "w-[300px] md:w-[600px] justify-between dark:bg-transparent dark:text-white bg-red-100 ring-2 ring-red-500"
-                                  : "w-[300px] md:w-[600px] justify-between dark:bg-transparent dark:text-white",
-                                !field.value && "text-muted-foreground"
+                                  ? "w-[300px] justify-between bg-red-100 ring-2 ring-red-500 dark:bg-transparent dark:text-white md:w-[600px]"
+                                  : "w-[300px] justify-between dark:bg-transparent dark:text-white md:w-[600px]",
+                                !field.value && "text-muted-foreground",
                               )}
                             >
                               <input
@@ -287,7 +288,7 @@ export const CreateListingForm = ({
                               />
                               {field.value
                                 ? categories.find(
-                                  (category) => category.name === field.value
+                                  (category) => category.name === field.value,
                                 )?.name
                                 : "Select a category"}
                               <CaretSortIcon className="ml-2 size-4 shrink-0 opacity-50" />
@@ -310,7 +311,7 @@ export const CreateListingForm = ({
                                     onSelect={() => {
                                       form.setValue(
                                         "service_category",
-                                        category.name
+                                        category.name,
                                       );
                                       form.trigger("service_category");
                                     }}
@@ -321,7 +322,7 @@ export const CreateListingForm = ({
                                         "ml-auto h-4 w-4",
                                         category.name === field.value
                                           ? "opacity-100"
-                                          : "opacity-0"
+                                          : "opacity-0",
                                       )}
                                     />
                                   </CommandItem>

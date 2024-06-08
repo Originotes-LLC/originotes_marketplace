@@ -1,12 +1,18 @@
 "use server";
 
-import type { CustomSwellFile, S3File } from "@/types/index";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import type { CustomSwellFile, S3File, S3IdAndSwellId } from "@/types/index";
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 
 import { ServiceListingSchema } from "@/lib/schema";
 import { auth } from "@clerk/nextjs/server";
 import { createProductDraft } from "@/lib/create-product-draft";
+import { deleteSwellS3File } from "@/lib/delete-swell-s3-file";
 import { getAccountByClerkId } from "@/lib/get-account-by-clerk-id";
+import { getErrorMessage } from "@/utils/get-error-message";
 import { revalidatePath } from "next/cache";
 import { serviceCategories } from "@/lib/service-categories";
 import sharp from "sharp";
@@ -23,7 +29,6 @@ export const submitNewService = async (prevState: any, formData: FormData) => {
 
   const data = Object.fromEntries(formData);
   const parsed = await ServiceListingSchema.safeParseAsync(data);
-  // console.log("parsed data on the submitNewService server action: ", parsed);
 
   if (!parsed.success) {
     return {
@@ -208,8 +213,9 @@ export async function uploadFilesToAmazonS3(formData: FormData | Error) {
         width: 2000,
         withoutEnlargement: true,
       });
+
       const optimizedBuffer = await resizedImage
-        .jpeg({ quality: 80 }) // Convert to JPEG with 80% quality
+        .jpeg({ quality: 60 })
         .toBuffer();
       const metadata = await resizedImage.metadata();
 
@@ -223,12 +229,12 @@ export async function uploadFilesToAmazonS3(formData: FormData | Error) {
         process.env.NODE_ENV === "development"
           ? process.env.AWS_DEV_BUCKET_NAME!
           : process.env.AWS_PROD_BUCKET_NAME!;
-      const key = `${uuidv4()}.jpeg`; // Use .jpeg extension for the processed file
+      const key = uuidv4();
       const uploadParams = {
         Bucket: bucket,
         Key: key,
+        ContentType: file.type,
         Body: optimizedBuffer,
-        ContentType: "image/jpeg",
         Metadata: {
           width: width.toString(),
           height: height.toString(),
@@ -244,6 +250,7 @@ export async function uploadFilesToAmazonS3(formData: FormData | Error) {
             url: `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`,
             width,
             height,
+            s3id: key,
           },
         };
       } else {
@@ -291,6 +298,7 @@ function createFileErrorResponse(
       url: null,
       width: 0,
       height: 0,
+      s3id: null,
     },
     issues,
   };
@@ -298,7 +306,7 @@ function createFileErrorResponse(
 
 export const saveUploadedFilesInSwell = async (
   formData: FormData | Error,
-): Promise<Error | CustomSwellFile[]> => {
+): Promise<string | CustomSwellFile[]> => {
   if (formData instanceof Error) {
     throw new Error("Invalid form data");
   }
@@ -315,6 +323,7 @@ export const saveUploadedFilesInSwell = async (
             url: file.data.url,
             width: file.data.width,
             height: file.data.height,
+            s3id: file.data.s3id,
           });
           return res;
         } else {
@@ -325,11 +334,49 @@ export const saveUploadedFilesInSwell = async (
 
     return filesSavedInSwell;
   } catch (error) {
-    console.log("error trying to save s3 files in swell: ", error);
-    if (error instanceof Error) {
-      throw new Error(error.message);
+    return getErrorMessage(error);
+  }
+};
+
+const deleteImageFromS3Aws = async (id: string) => {
+  if (!id) {
+    return getErrorMessage("No id provided to deleteImageFromS3Aws");
+  }
+  const bucket =
+    process.env.NODE_ENV === "development"
+      ? process.env.AWS_DEV_BUCKET_NAME!
+      : process.env.AWS_PROD_BUCKET_NAME!;
+  const command = new DeleteObjectCommand({
+    Bucket: bucket,
+    Key: id,
+  });
+
+  try {
+    const response = await s3Client.send(command);
+
+    return response;
+  } catch (err) {
+    console.error(err);
+    return getErrorMessage(err);
+  }
+};
+
+export const deleteS3Image = async ({ s3id, id }: S3IdAndSwellId) => {
+  if (!id) {
+    throw new Error("No picture Id was provided. Please provide an ID");
+  }
+
+  const s3DeletedImage = await deleteImageFromS3Aws(s3id);
+
+  if (typeof s3DeletedImage === "string") {
+    return getErrorMessage(s3DeletedImage);
+  } else {
+    const deletedSwellS3Image = await deleteSwellS3File(id);
+
+    if (typeof deletedSwellS3Image === "string") {
+      return getErrorMessage(deletedSwellS3Image);
     } else {
-      throw new Error("An error occurred while saving the files in Swell");
+      return s3DeletedImage;
     }
   }
 };
