@@ -1,7 +1,17 @@
+export interface S3IdAndSwellId {
+  s3id: string;
+  id: string;
+}
+
 export interface S3File {
   status: number;
   message: string;
-  data: { url: string | null; width: number; height: number };
+  data: {
+    url: string | null | null;
+    width: number;
+    height: number;
+    s3id: string | null;
+  };
 }
 
 export interface CustomSwellFile {
@@ -10,6 +20,7 @@ export interface CustomSwellFile {
   id: string;
   url: string;
   width: number;
+  s3id: string;
 }
 
 export interface SwellFile {

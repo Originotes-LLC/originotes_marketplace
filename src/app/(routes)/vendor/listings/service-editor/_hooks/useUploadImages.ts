@@ -1,5 +1,6 @@
-import type { CustomSwellFile, S3File } from "@/types/index";
+import type { CustomSwellFile, S3File, S3IdAndSwellId } from "@/types/index";
 import {
+  deleteS3Image,
   saveUploadedFilesInSwell,
   uploadFilesToAmazonS3,
 } from "@/vendor/actions";
@@ -14,8 +15,20 @@ export const useUploadImages = () => {
   const [uploadedFiles, setUploadedFiles] = useState<
     (File | S3File | CustomSwellFile | null)[]
   >([]);
+  console.log("uploadedFiles: ", uploadedFiles);
 
   const [isUploading, setIsUploading] = useState(false);
+
+  useEffect(() => {
+    if (uploadedFiles.length > 0) {
+      const isTheArrayNull = uploadedFiles.every((file) => file === null);
+
+      if (isTheArrayNull) {
+        setUploadedFiles([]);
+      }
+    }
+  }, [uploadedFiles]);
+
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
     maxFiles: 10 - uploadedFiles.length,
     maxSize: 5 * 1024 * 1024,
@@ -73,6 +86,7 @@ export const useUploadImages = () => {
         );
 
         const filesSavedInS3 = await uploadFilesToAmazonS3(appendedFiles);
+        console.log("filesSavedInS3: ", filesSavedInS3);
         // save the files in Swell after uploading to S3
         const savedS3Files = appendMultipleFilesToFormData(
           "files",
@@ -80,11 +94,11 @@ export const useUploadImages = () => {
         );
 
         const filesSavedInSwell = await saveUploadedFilesInSwell(savedS3Files);
+        console.log("filesSavedInSwell: ", filesSavedInSwell);
 
         // TODO: Handle the case when the files are not saved in Swell and you get an Error
-        if (filesSavedInSwell instanceof Error) {
+        if (typeof filesSavedInSwell === "string") {
           setIsUploading(false);
-          console.log("Error saving files in Swell: ", filesSavedInSwell);
           toast.error(
             "There was an error trying to save the file(s) in the database",
             {
@@ -93,6 +107,8 @@ export const useUploadImages = () => {
               position: "top-right",
             },
           );
+          setUploadedFiles([]);
+          return;
         } else {
           setUploadedFiles((prevFiles) => {
             const filesToKeep = prevFiles.filter(
@@ -125,7 +141,26 @@ export const useUploadImages = () => {
     }
   }, [fileRejections]);
 
+  const deleteImage = async ({ s3id, id }: S3IdAndSwellId) => {
+    setUploadedFiles((files) => {
+      return files.map((file) => {
+        if (file === null) {
+          return null;
+        }
+        if (file instanceof File) {
+          return file;
+        }
+        if (file && "id" in file) {
+          return file.id !== id ? file : null;
+        }
+        return file;
+      });
+    });
+    await deleteS3Image({ s3id, id });
+  };
+
   return {
+    deleteImage,
     isUploading,
     setUploadedFiles,
     getRootProps,
