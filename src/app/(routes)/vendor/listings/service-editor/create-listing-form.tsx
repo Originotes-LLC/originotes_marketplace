@@ -34,6 +34,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ListingFileUpload } from "@/listings/service-editor/listing-file-upload";
 import { ListingFormFooter } from "@/listings/service-editor/listing_form_footer";
+import { LocationInput } from "@/listings/service-editor/(components)/location";
 import { ServiceListingSchema } from "@/lib/schema";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/utils/shadcdn_utils";
@@ -44,19 +45,6 @@ import { useFormState } from "react-dom";
 import { useUploadImages } from "@/listings/service-editor/_hooks/useUploadImages";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-/*
-
-Fields needed to create a service
-- Service name
-- Type : Digital (hidden or set in the server action directly)
-- Category (selected from a list of categories)
-- Vendor  (set directly in the server action)
-- Media (passing image Files)
-- Standard Pricing (list price, sale price, currency)
-- Options (list of options like add-ons of type toggle )
-- Service Description (content)
-*/
 
 const initialState = {
   status: 200,
@@ -79,6 +67,7 @@ export const CreateListingForm = ({
       service_description: "",
       service_category: "",
       service_price: "",
+      service_location: "",
     },
   });
 
@@ -319,7 +308,7 @@ export const CreateListingForm = ({
                                     {category.name}
                                     <CheckIcon
                                       className={cn(
-                                        "ml-auto h-4 w-4",
+                                        "ml-auto size-4",
                                         category.name === field.value
                                           ? "opacity-100"
                                           : "opacity-0",
@@ -351,7 +340,7 @@ export const CreateListingForm = ({
         </div>
 
         {/* PRICING SECTION */}
-        <div className="grid grid-cols-1 gap-8 pb-64 pt-10 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 pt-10 md:grid-cols-3">
           <div className="px-4 sm:px-0">
             <h2 className="dark:text-background text-base font-semibold leading-7 text-neutral-900">
               Pricing & Inventory
@@ -411,6 +400,26 @@ export const CreateListingForm = ({
                     </FormItem>
                   )}
                 />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Location and availability */}
+        <div className="grid grid-cols-1 gap-8 pb-64 pt-10 md:grid-cols-3">
+          <div className="px-4 sm:px-0">
+            <h2 className="dark:text-background text-base font-semibold leading-7 text-neutral-900">
+              Location & Availability
+            </h2>
+            <p className="dark:text-background mt-1 text-sm leading-6 text-neutral-600">
+              Set the location and availability of your service.
+            </p>
+          </div>
+          {/* Form elements */}
+          <div className="dark:bg-foreground rounded-xl shadow-sm ring-1 ring-neutral-900/5 md:col-span-2">
+            <div className="px-4 py-6 sm:p-8">
+              <div className="relative max-w-2xl space-y-10">
+                <LocationInput form={form} />
               </div>
             </div>
           </div>

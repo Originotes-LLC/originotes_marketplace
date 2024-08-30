@@ -8,14 +8,13 @@ import { useEffect, useState } from "react";
 
 import { appendMultipleFilesToFormData } from "@/utils/formData-multiple-append";
 import { reduceErrorCodes } from "@/utils/reduce-error-codes";
-import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
+import { toast } from "sonner";
 
 export const useUploadImages = () => {
   const [uploadedFiles, setUploadedFiles] = useState<
     (File | S3File | CustomSwellFile | null)[]
   >([]);
-  console.log("uploadedFiles: ", uploadedFiles);
 
   const [isUploading, setIsUploading] = useState(false);
 

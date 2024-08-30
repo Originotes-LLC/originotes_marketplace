@@ -6,17 +6,19 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { SearchBoxCore, SessionToken } from "@mapbox/search-js-core";
 
-import { ServiceListingSchema } from "@/lib/schema";
-import { auth } from "@clerk/nextjs/server";
 import { createProductDraft } from "@/lib/create-product-draft";
 import { deleteSwellS3File } from "@/lib/delete-swell-s3-file";
 import { getAccountByClerkId } from "@/lib/get-account-by-clerk-id";
-import { getErrorMessage } from "@/utils/get-error-message";
-import { revalidatePath } from "next/cache";
-import { serviceCategories } from "@/lib/service-categories";
-import sharp from "sharp";
+import { ServiceListingSchema } from "@/lib/schema";
 import swell from "@/lib/server";
+import { serviceCategories } from "@/lib/service-categories";
+import { getErrorMessage } from "@/utils/get-error-message";
+import { auth } from "@clerk/nextjs/server";
+import type { SearchBoxSuggestionResponse } from "@mapbox/search-js-core";
+import { revalidatePath } from "next/cache";
+import sharp from "sharp";
 import { v4 as uuidv4 } from "uuid";
 
 export const submitNewService = async (prevState: any, formData: FormData) => {
@@ -379,4 +381,22 @@ export const deleteS3Image = async ({ s3id, id }: S3IdAndSwellId) => {
       return s3DeletedImage;
     }
   }
+};
+
+export const searchLocation = async (
+  searchTerm: string,
+): Promise<SearchBoxSuggestionResponse | null> => {
+  const search = new SearchBoxCore({
+    accessToken: process.env.MAPBOX_ACCESS_TOKEN!,
+  });
+
+  const sessionToken = new SessionToken();
+  const result = await search.suggest(searchTerm, {
+    sessionToken,
+    country: "us",
+    types: "postcode,city",
+  });
+  if (result.suggestions.length === 0) return null;
+
+  return result;
 };

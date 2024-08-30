@@ -1,3 +1,37 @@
+export interface MaxBoxSuggestions {
+  name: string;
+  mapbox_id: string;
+  feature_type: string;
+  place_formatted: string;
+  context: {
+    country: {
+      id: string;
+      name: string;
+      country_code: string;
+      country_code_alpha_3: string;
+    };
+    region: {
+      id: string;
+      name: string;
+      region_code: string;
+      region_code_full: string;
+    };
+    district: {
+      id: string;
+      name: string;
+    };
+  };
+  language: "en";
+  maki: "marker";
+  metadata: {};
+}
+
+export interface MapBoxResponse {
+  attribution: string;
+  response_id: string;
+  suggestions: MaxBoxSuggestions[];
+}
+
 export interface S3IdAndSwellId {
   s3id: string;
   id: string;

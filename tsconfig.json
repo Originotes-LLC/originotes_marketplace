@@ -4,6 +4,7 @@
     "moduleDetection": "force",
     "verbatimModuleSyntax": true,
     "baseUrl": "src/app",
+    "types": ["@types/mapbox__mapbox-sdk"],
     "paths": {
       "@/components/*": ["_components/*"],
       "@/utils/*": ["_utils/*"],
