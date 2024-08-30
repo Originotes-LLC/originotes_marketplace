@@ -1,25 +1,5 @@
 import { z } from "zod";
 
-// const UploadedFilesSchema = z
-//   .array(
-//     z.object({
-//       status: z.number(),
-//       message: z.string(),
-//       data: z.object({
-//         url: z.string(),
-//         width: z.number(),
-//         height: z.number(),
-//       }),
-//     })
-//   )
-//   .nonempty();
-
-// interface UploadedFiles<T> {
-//   status: number;
-//   message: string;
-//   data: T;
-// }
-
 export const ServiceListingSchema = z.object({
   service_name: z
     .string()
@@ -71,6 +51,17 @@ export const ServiceListingSchema = z.object({
           "Something went wrong. We were unable to get the submitted files. Please try again or contact support if the issue persists.",
       });
     }
+  }),
+  service_location: z.string().transform((val, ctx) => {
+    console.log("received location values in the schema: ", val);
+    // eslint-disable-next-line no-constant-condition
+    if (true) {
+      return ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Location is required. Please select a location.",
+      });
+    }
+    return val;
   }),
   service_price: z
     .string({

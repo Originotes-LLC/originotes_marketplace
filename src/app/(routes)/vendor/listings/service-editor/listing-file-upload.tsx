@@ -25,7 +25,7 @@ export function ListingFileUpload({
       <div {...getRootProps()}>
         <label
           htmlFor="service_image_file"
-          className="block text-sm font-medium leading-6 text-neutral-900"
+          className="dark:text-background block text-sm font-medium leading-6 text-neutral-900"
         >
           Photos
         </label>

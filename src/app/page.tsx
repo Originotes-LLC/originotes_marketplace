@@ -1,14 +1,14 @@
-import FrontPage from "../app/_components/frontpage";
-import Footer from "./_components/footer";
-import Navbar from "./_components/navbar";
+import FrontPage from "../app/_components/frontpage2";
+// import Footer from "./_components/footer";
+// import Navbar from "./_components/navbar";
 
-// 
+//
 export default function Home() {
   return (
     <main>
-      <Navbar />
+      {/* <Navbar /> */}
       <FrontPage />
-      <Footer />
+      {/* <Footer /> */}
     </main>
   );
 }
